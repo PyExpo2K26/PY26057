@@ -49,13 +49,13 @@ if "page" not in st.session_state:
     st.session_state.page = "splash"
 if "language" not in st.session_state:
     st.session_state.language = "English"
+if "farmer_verified" not in st.session_state:
+    st.session_state.farmer_verified = False
 
 # ---------------- STYLE ----------------
 st.markdown("""
 <style>
-body {
-    background-color: #f0fff0;
-}
+body { background-color: #f0fff0; }
 div.stButton > button {
     background-color: #2f7d32;
     color: white;
@@ -72,7 +72,6 @@ if st.session_state.page == "splash":
 
     logo_path = os.path.join(os.path.dirname(__file__), "A_logo_for_WEXPO_2026.png")
 
-    # 🔥 CENTER LOGO FIX
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if os.path.exists(logo_path):
@@ -91,7 +90,7 @@ if st.session_state.page == "splash":
     st.session_state.page = "language"
     st.rerun()
 
-# ---------------- LANGUAGE SELECTION ----------------
+# ---------------- LANGUAGE ----------------
 elif st.session_state.page == "language":
 
     st.markdown("<h2 style='text-align:center;color:#2f7d32'>Select Language</h2>", unsafe_allow_html=True)
@@ -110,15 +109,12 @@ elif st.session_state.page == "user_type":
     st.markdown(f"<h2 style='text-align:center;color:#2f7d32'>{text['welcome']}</h2>", unsafe_allow_html=True)
 
     c1, c2 = st.columns(2)
-    with c1:
-        if st.button(f"👨‍🌾 {text['farmer']}"):
-            st.session_state.page = "farmer"
-            st.rerun()
-
-    with c2:
-        if st.button(f"🛒 {text['consumer']}"):
-            st.session_state.page = "consumer"
-            st.rerun()
+    if c1.button(f"👨‍🌾 {text['farmer']}"):
+        st.session_state.page = "farmer"
+        st.rerun()
+    if c2.button(f"🛒 {text['consumer']}"):
+        st.session_state.page = "consumer"
+        st.rerun()
 
 # ---------------- FARMER LOGIN ----------------
 elif st.session_state.page == "farmer":
@@ -132,12 +128,11 @@ elif st.session_state.page == "farmer":
             res = requests.get(url).json()
             if res["Status"] == "Success":
                 st.session_state.session_id = res["Details"]
-                st.session_state.otp_time = time.time()
                 st.success("OTP sent 📲")
             else:
                 st.error("OTP sending failed")
         else:
-            st.error("Enter valid 10-digit number")
+            st.error("Enter valid number")
 
     if "session_id" in st.session_state:
         otp = st.text_input("Enter OTP", type="password")
@@ -145,30 +140,48 @@ elif st.session_state.page == "farmer":
             verify_url = f"https://2factor.in/API/V1/{API_KEY}/SMS/VERIFY/{st.session_state.session_id}/{otp}"
             result = requests.get(verify_url).json()
             if result["Status"] == "Success":
-                st.success("Farmer Logged In 🎉")
-                st.session_state.page = "farmer_dashboard"
+                st.session_state.page = "farmer_video"
                 st.rerun()
             else:
                 st.error("Invalid OTP")
+
+# ---------------- FARMER VIDEO VERIFICATION ----------------
+elif st.session_state.page == "farmer_video":
+
+    st.markdown("<h3 style='color:#2f7d32'>Live Video Verification</h3>", unsafe_allow_html=True)
+    video = st.file_uploader("Upload demo video (mp4/webm)", type=["mp4", "webm"])
+
+    if video:
+        os.makedirs("uploads", exist_ok=True)
+        with open(f"uploads/verification_{int(time.time())}.mp4", "wb") as f:
+            f.write(video.getbuffer())
+
+        st.session_state.farmer_verified = True
+        st.success("✅ Video uploaded & verified (Demo)")
+        st.session_state.page = "farmer_dashboard"
+        st.rerun()
 
 # ---------------- FARMER DASHBOARD ----------------
 elif st.session_state.page == "farmer_dashboard":
 
     st.markdown("<h2 style='color:#2f7d32'>Farmer Dashboard</h2>", unsafe_allow_html=True)
 
+    if st.session_state.farmer_verified:
+        st.success("Verified Farmer ✅")
+
     if st.button("Sell Product"):
-        st.session_state.page = "farmer_product_upload"
+        st.session_state.page = "product_upload"
         st.rerun()
 
 # ---------------- PRODUCT UPLOAD ----------------
-elif st.session_state.page == "farmer_product_upload":
+elif st.session_state.page == "product_upload":
 
     st.markdown("<h3 style='color:#2f7d32'>Upload Product</h3>", unsafe_allow_html=True)
 
     product = st.text_input("Product Name")
     qty = st.number_input("Quantity", min_value=1)
     price = st.number_input("Price")
-    media = st.file_uploader("Upload Product Image/Video", type=["jpg","png","mp4"])
+    media = st.file_uploader("Upload Image/Video", type=["jpg", "png", "mp4"])
 
     if st.button("Upload"):
         if product and media:
@@ -184,7 +197,7 @@ elif st.session_state.page == "farmer_product_upload":
 # ---------------- CONSUMER ----------------
 elif st.session_state.page == "consumer":
 
-    st.markdown("<h2 style='color:#2f7d32'>Consumer Login</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:#2f7d32'>Consumer Registration</h2>", unsafe_allow_html=True)
     phone = st.text_input("Mobile Number")
 
     if st.button("Register"):
