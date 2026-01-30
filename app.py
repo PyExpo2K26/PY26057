@@ -157,7 +157,7 @@ elif st.session_state.page == "farmer_video":
             f.write(video.getbuffer())
 
         st.session_state.farmer_verified = True
-        st.success("✅ Video uploaded & verified (Demo)")
+        st.success(" Video uploaded & verified (Demo)")
         st.session_state.page = "farmer_dashboard"
         st.rerun()
 
@@ -167,7 +167,7 @@ elif st.session_state.page == "farmer_dashboard":
     st.markdown("<h2 style='color:#2f7d32'>Farmer Dashboard</h2>", unsafe_allow_html=True)
 
     if st.session_state.farmer_verified:
-        st.success("Verified Farmer ✅")
+        st.success("Verified Farmer ")
 
     if st.button("Sell Product"):
         st.session_state.page = "product_upload"
@@ -188,7 +188,7 @@ elif st.session_state.page == "product_upload":
             os.makedirs("uploads", exist_ok=True)
             with open(f"uploads/{media.name}", "wb") as f:
                 f.write(media.getbuffer())
-            st.success("Product uploaded successfully ✅")
+            st.success("Product uploaded successfully ")
             st.session_state.page = "farmer_dashboard"
             st.rerun()
         else:
@@ -197,8 +197,58 @@ elif st.session_state.page == "product_upload":
 # ---------------- CONSUMER ----------------
 elif st.session_state.page == "consumer":
 
-    st.markdown("<h2 style='color:#2f7d32'>Consumer Registration</h2>", unsafe_allow_html=True)
-    phone = st.text_input("Mobile Number")
+    st.markdown("<h2 style='color:#2f7d32;'>Consumer Login</h2>", unsafe_allow_html=True)
 
-    if st.button("Register"):
-        st.success("Consumer Registered (Demo)")
+    phone = st.text_input("Mobile Number (10 digits)")
+    email = st.text_input("Email (Optional)")
+
+    if st.button("Send OTP"):
+        if phone.isdigit() and len(phone) == 10:
+            url = f"https://2factor.in/API/V1/{API_KEY}/SMS/91{phone}/AUTOGEN/{TEMPLATE}"
+            res = requests.get(url).json()
+            if res["Status"] == "Success":
+                st.session_state.consumer_session_id = res["Details"]
+                st.success("OTP sent 📲")
+
+    if "consumer_session_id" in st.session_state and not st.session_state.get("consumer_verified", False):
+        otp = st.text_input("Enter OTP", type="password")
+        if st.button("Verify OTP"):
+            verify_url = f"https://2factor.in/API/V1/{API_KEY}/SMS/VERIFY/{st.session_state.consumer_session_id}/{otp}"
+            verify_res = requests.get(verify_url).json()
+            if verify_res["Status"] == "Success":
+                st.session_state.consumer_verified = True
+                st.success("Consumer Verified ")
+                st.rerun()
+
+    # ---------------- CONSUMER DASHBOARD (SAFE) ----------------
+    if st.session_state.get("consumer_verified", False):
+
+        st.markdown("## 🛒 Consumer Dashboard")
+
+        uploads = "uploads"
+        if os.path.exists(uploads):
+            for file in os.listdir(uploads):
+                path = os.path.join(uploads, file)
+                if file.endswith(".mp4"):
+                    st.video(path)
+                elif file.endswith((".jpg", ".png")):
+                    st.image(path, width=300)
+        else:
+            st.info("No farmer uploads yet.")
+
+        if st.button("Upload Product for Quality Check"):
+            st.session_state.page = "consumer_upload_video"
+            st.rerun()
+
+# ---------------- CONSUMER UPLOAD ----------------
+elif st.session_state.page == "consumer_upload_video":
+    st.markdown("<h3>Upload Product for Quality Check</h3>")
+    file = st.file_uploader("Upload Image / Video", type=["mp4", "jpg", "png"])
+    if st.button("Upload"):
+        if product and file:
+            os.makedirs("consumer_uploads", exist_ok=True)
+            with open(f"consumer_uploads/{file.name}", "wb") as f:
+                f.write(file.getbuffer())
+            st.success("Uploaded Successfully ")
+            st.session_state.page = "consumer"
+            st.rerun()
