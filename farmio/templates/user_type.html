@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="glass-card" style="width: 600px;">
+    <h2 style="color: var(--leaf-green); margin-bottom: 2rem;">Who are you today?</h2>
+    
+    <div style="display: flex; gap: 20px;">
+        <a href="/verify/otp/farmer" style="text-decoration: none; flex: 1;">
+            <div style="padding: 20px; border-radius: 20px; background: #fff; border: 2px solid #e0e0e0; transition: 0.3s;" 
+                 onmouseover="this.style.borderColor='#2d6a4f'" onmouseout="this.style.borderColor='#e0e0e0'">
+                <div style="font-size: 50px;">👨‍🌾</div>
+                <h3 style="color: #333;">Farmer</h3>
+                <p style="font-size: 0.8rem; color: #666;">Sell your fresh harvest directly.</p>
+            </div>
+        </a>
+
+        <a href="/verify/otp/consumer" style="text-decoration: none; flex: 1;">
+            <div style="padding: 20px; border-radius: 20px; background: #fff; border: 2px solid #e0e0e0; transition: 0.3s;"
+                 onmouseover="this.style.borderColor='#2d6a4f'" onmouseout="this.style.borderColor='#e0e0e0'">
+                <div style="font-size: 50px;">🛒</div>
+                <h3 style="color: #333;">Consumer</h3>
+                <p style="font-size: 0.8rem; color: #666;">Scan and buy verified produce.</p>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock %}
+<div class="glass-card">
+    <h2>{{ text.welcome }}</h2>
+    <div class="card-container">
+        <div class="card">{{ text.farmer }}</div>
+        <div class="card">{{ text.consumer }}</div>
+    </div>
+</div>

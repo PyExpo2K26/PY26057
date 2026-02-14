@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FARMIO</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .splash-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: white;
+        }
+        .logo-animation {
+            width: 250px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-container">
+        <img src="{{ url_for('static', filename='images/A_logo_for_WEXPO_2026.png') }}" class="logo-animation">
+        <h1 style="color: #2d6a4f; margin-top: 20px;">FARMIO</h1>
+    </div>
+
+    <script>
+        // Redirect to Language page after 3 seconds
+        setTimeout(function() {
+            window.location.href = "/language";
+        }, 3000);
+    </script>
+</body>
+</html>
