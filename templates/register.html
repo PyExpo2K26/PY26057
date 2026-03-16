@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+{% block title %}Register - FarmIO{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="auth-card border-0 animate-fade shadow-premium" style="border-radius: 32px;">
+                <div class="text-center mb-5">
+                    <div class="brand-icon mx-auto mb-3" style="width: 50px; height: 50px; font-size: 1.5rem;">F</div>
+                    <h2 class="fw-bold text-dark">Join the Movement</h2>
+                    <p class="text-muted small">Choose your path in the direct farm ecosystem</p>
+                </div>
+
+                <form method="POST" action="{{ url_for('register') }}" id="registerForm">
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label for="name"
+                                class="form-label text-uppercase small fw-bold text-muted letter-spacing-1">Full
+                                Identity</label>
+                            <input type="text" class="form-control bg-light border-0 py-3" id="name" name="name"
+                                placeholder="John Doe" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="email"
+                                class="form-label text-uppercase small fw-bold text-muted letter-spacing-1">Email
+                                Address</label>
+                            <input type="email" class="form-control bg-light border-0 py-3" id="email" name="email"
+                                placeholder="john@example.com" required>
+                        </div>
+                    </div>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label for="password"
+                                class="form-label text-uppercase small fw-bold text-muted letter-spacing-1">Security
+                                Key</label>
+                            <input type="password" class="form-control bg-light border-0 py-3" id="password"
+                                name="password" placeholder="••••••••" required minlength="6">
+                            <div class="x-small text-muted mt-2">At least 6 characters</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="roleSelect"
+                                class="form-label text-uppercase small fw-bold text-muted letter-spacing-1">User
+                                Role</label>
+                            <select class="form-select bg-light border-0 py-3 fw-bold text-primary" id="roleSelect"
+                                name="role" required>
+                                <option value="" disabled selected>Select Role</option>
+                                <option value="consumer">Consumer (Buyer)</option>
+                                <option value="farmer">Farmer (Seller)</option>
+                                <option value="delivery_partner">Delivery Partner (Delivery Guy)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Location Sector -->
+                    <div class="p-4 bg-primary-soft rounded-xl mb-4 border border-white">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--p-600)"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            <h6 class="mb-0 fw-bold text-primary text-uppercase small letter-spacing-1">Geographic
+                                Precision</h6>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="user_location" class="form-label x-small fw-bold text-muted">Primary Address /
+                                Area</label>
+                            <input type="text" class="form-control bg-white border-0 py-2" id="user_location"
+                                name="user_location" placeholder="e.g. Anand, Gujarat" required>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <label for="user_latitude"
+                                    class="form-label x-small fw-bold text-muted">Latitude</label>
+                                <input type="number" class="form-control bg-white border-0 py-2" id="user_latitude"
+                                    name="user_latitude" step="any" placeholder="GPS Lat" required>
+                            </div>
+                            <div class="col-6">
+                                <label for="user_longitude"
+                                    class="form-label x-small fw-bold text-muted">Longitude</label>
+                                <input type="number" class="form-control bg-white border-0 py-2" id="user_longitude"
+                                    name="user_longitude" step="any" placeholder="GPS Lon" required>
+                            </div>
+                        </div>
+
+                        <button type="button"
+                            class="btn btn-white btn-sm w-100 rounded-pill shadow-sm border py-2 text-primary fw-bold d-flex align-items-center justify-content-center gap-2"
+                            id="detectLocationBtn">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.49-4.47-4.03-8.01-8.5-8.5V2h-2v.5C5.97 3.49 2.43 7.03 1.94 11.5H1v2h.94c.49 4.47 4.03 8.01 8.5 8.5V22h2v-.5c4.47-.49 8.01-4.03 8.5-8.5H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z" />
+                            </svg>
+                            Auto-Detect Coordinates
+                        </button>
+                        <div id="locationStatus" class="x-small text-center mt-2 text-muted" style="display:none;">
+                        </div>
+                    </div>
+
+                    <!-- Farmer Dynamic Fields -->
+                    <div id="farmerFields" class="animate-fade" style="display:none; animation-duration: 0.3s;">
+                        <div class="p-4 bg-light rounded-xl mb-4 border">
+                            <h6 class="mb-4 fw-bold text-dark text-uppercase small letter-spacing-1">Farm Enterprise
+                                Details</h6>
+
+                            <div class="mb-3">
+                                <label for="farm_name" class="form-label x-small fw-bold text-muted">Registered Farm
+                                    Name</label>
+                                <input type="text" class="form-control bg-white border py-2" id="farm_name"
+                                    name="farm_name" placeholder="e.g. Green Meadows Dairy" data-required="true">
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-6 mb-3">
+                                    <label for="milk_capacity" class="form-label x-small fw-bold text-muted">Daily
+                                        Capacity (L)</label>
+                                    <input type="number" class="form-control bg-white border py-2" id="milk_capacity"
+                                        name="milk_capacity" placeholder="50" step="0.5" min="0">
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label for="price_per_litre" class="form-label x-small fw-bold text-muted">Base
+                                        Price (Rs/L)</label>
+                                    <input type="number" class="form-control bg-white border py-2" id="price_per_litre"
+                                        name="price_per_litre" placeholder="60" step="0.5" min="0">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit"
+                        class="btn btn-primary btn-lg w-100 rounded-pill py-3 fw-bold mb-4 shadow-premium">Initialize
+                        Account</button>
+
+                    <div class="text-center">
+                        <p class="mb-0 small text-muted">Already standardized? <a href="{{ url_for('login') }}"
+                                class="text-primary fw-bold">Sign In</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .letter-spacing-1 {
+        letter-spacing: 0.1em;
+    }
+
+    .x-small {
+        font-size: 0.75rem;
+    }
+
+    .bg-primary-soft {
+        background-color: var(--p-50);
+    }
+
+    .btn-white {
+        background: white;
+        color: var(--p-600);
+    }
+
+    .rounded-xl {
+        border-radius: 16px;
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const roleSelect = document.getElementById('roleSelect');
+        const farmerFields = document.getElementById('farmerFields');
+        const farmInputs = farmerFields.querySelectorAll('input');
+
+        roleSelect.addEventListener('change', function () {
+            if (this.value === 'farmer') {
+                farmerFields.style.display = 'block';
+                farmInputs.forEach(input => {
+                    if (input.dataset.required === 'true') {
+                        input.required = true;
+                    }
+                });
+            } else {
+                farmerFields.style.display = 'none';
+                farmInputs.forEach(input => input.required = false);
+            }
+        });
+
+        // Location Detection
+        const detectBtn = document.getElementById('detectLocationBtn');
+        const statusDiv = document.getElementById('locationStatus');
+        const latInput = document.getElementById('user_latitude');
+        const lonInput = document.getElementById('user_longitude');
+        const addrInput = document.getElementById('user_location');
+
+        detectBtn.addEventListener('click', function () {
+            statusDiv.style.display = 'block';
+            statusDiv.textContent = "Requesting permission...";
+
+            if (!navigator.geolocation) {
+                statusDiv.textContent = "Gps not supported by browser.";
+                statusDiv.classList.add('text-danger');
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    latInput.value = pos.coords.latitude.toFixed(6);
+                    lonInput.value = pos.coords.longitude.toFixed(6);
+                    statusDiv.textContent = "Coordinates locked.";
+                    statusDiv.classList.replace('text-muted', 'text-success');
+                },
+                (err) => {
+                    statusDiv.textContent = "Unable to retrieve location.";
+                    statusDiv.classList.add('text-danger');
+                }
+            );
+        });
+    });
+</script>
+{% endblock %}

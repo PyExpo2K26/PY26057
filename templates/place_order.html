@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+{% block title %}Place Order - FarmIO{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const cards = document.querySelectorAll('.listing-select-card');
+        const listingInput = document.getElementById('listing_id');
+        const availableDisplay = document.getElementById('availableDisplay');
+        const quantityInput = document.getElementById('quantity');
+
+        cards.forEach(card => {
+            card.addEventListener('click', function () {
+                // Check if closed
+                if (this.dataset.closed == "1") return;
+
+                // Remove active class from all
+                cards.forEach(c => {
+                    c.classList.remove('border-primary', 'shadow-premium', 'bg-primary-soft');
+                    c.style.borderColor = 'var(--s-200)';
+                });
+
+                // Add active class to this
+                this.classList.add('border-primary', 'shadow-premium', 'bg-primary-soft');
+                this.style.borderColor = 'var(--p-500)';
+
+                // Update hidden input
+                const listingInput = document.getElementById('listing_id');
+                const listingId = this.dataset.listingId;
+                listingInput.value = listingId;
+
+                // Update display
+                const availableDisplay = document.getElementById('availableDisplay');
+                const remaining = this.dataset.remaining;
+                availableDisplay.innerHTML = `<span class="text-primary fw-bold">Ready to order.</span> Capacity: <strong>${remaining} L</strong>`;
+
+                // Set max quantity
+                const quantityInput = document.getElementById('quantity');
+                quantityInput.max = remaining;
+                if (parseFloat(quantityInput.value) > parseFloat(remaining)) {
+                    quantityInput.value = remaining;
+                }
+            });
+        });
+
+        // Auto-select first open listing
+        const firstOpen = document.querySelector('.listing-select-card[data-closed="0"]');
+        if (firstOpen) {
+            firstOpen.click();
+        }
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header border-0 pb-4">
+    <div class="container animate-fade">
+        <h2 class="mb-1 fw-bold display-6">Secure Your Supply</h2>
+        <p class="text-muted mb-0 lead small">Ordering directly from <span class="text-primary fw-bold">{{
+                farmer['farmer_name'] }}</span></p>
+    </div>
+</div>
+
+<div class="container pb-5">
+    <div class="row g-5">
+        <!-- Farmer Info Sidebar -->
+        <div class="col-lg-4 col-md-5 animate-fade" style="animation-delay: 0.1s;">
+            <div class="card border-0 shadow-premium overflow-hidden" style="border-radius: 20px;">
+                <div class="card-header bg-white border-bottom p-4">
+                    <h6 class="mb-0 fw-bold text-uppercase small text-muted letter-spacing-1">Farmer Profile</h6>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <div class="bg-primary-soft text-primary fw-bold d-flex align-items-center justify-content-center"
+                            style="width: 50px; height:50px; border-radius: 12px; font-size: 1.25rem;">
+                            {{ farmer['farmer_name'][0]|upper }}
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold text-dark">{{ farmer['farmer_name'] }}</h6>
+                            <p class="mb-0 x-small text-muted">{{ farmer['farm_name'] }}</p>
+                        </div>
+                    </div>
+
+                    <div class="vstack gap-3 x-small fw-bold text-muted text-uppercase">
+                        <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light">
+                            <span>Base Rate</span>
+                            <span class="text-primary">Rs. {{ farmer['price_per_litre'] }}/L</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center py-2">
+                            <span>Operational Area</span>
+                            <span class="text-dark">{{ farmer['location'] or 'Verified Region' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 p-4 rounded-xl bg-light border border-white">
+                <p class="x-small text-muted mb-0"><strong>Trust Note:</strong> This farmer has been verified for
+                    quality and hygiene standards. Your checkout is immediate and secure.</p>
+            </div>
+        </div>
+
+        <!-- Order Form Main -->
+        <div class="col-lg-8 col-md-7 animate-fade" style="animation-delay: 0.2s;">
+            {% if listings %}
+            <div class="card border-0 shadow-premium" style="border-radius: 24px;">
+                <div class="card-body p-4 p-md-5">
+                    <h5 class="fw-bold text-dark mb-4">Select Availability Date</h5>
+
+                    <div class="row g-3 mb-5">
+                        {% for listing in listings %}
+                        <div class="col-md-6">
+                            <div class="card h-100 border-2 listing-select-card {% if listing['is_closed'] %}is-closed{% endif %}"
+                                data-listing-id="{{ listing['listing_id'] }}"
+                                data-remaining="{{ listing['remaining'] }}"
+                                data-closed="{{ 1 if listing['is_closed'] else 0 }}">
+                                <div class="card-body p-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div class="fw-bold text-dark">{{ listing['date'] }}</div>
+                                        {% if listing['is_closed'] %}
+                                        <span class="badge bg-danger rounded-pill x-small px-2">CLOSED</span>
+                                        {% else %}
+                                        <span class="badge bg-primary-soft text-primary rounded-pill x-small px-2">{{
+                                            listing['remaining'] }} L Left</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="d-flex justify-content-between x-small text-muted">
+                                        <span>Price Today</span>
+                                        <span class="fw-bold text-dark">Rs. {{ listing['price_per_litre'] }}/L</span>
+                                    </div>
+                                    {% if listing['collection_time'] %}
+                                    <div class="d-flex justify-content-between x-small text-muted mt-1">
+                                        <span>Fresh Batch</span>
+                                        <span class="text-primary fw-bold">{{ listing['collection_time'] }}</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="p-3 bg-light rounded-md mb-4 border d-flex align-items-center gap-2">
+                        <div id="availableDisplay" class="x-small text-muted">Select an available date to proceed.</div>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('place_order', farmer_id=farmer['farmer_id']) }}"
+                        id="orderForm">
+                        <input type="hidden" name="listing_id" id="listing_id"
+                            value="{{ listings[0]['listing_id'] if listings else '' }}" required>
+
+                        <div class="mb-5">
+                            <label for="quantity"
+                                class="form-label text-uppercase small fw-bold text-muted letter-spacing-1">Desired
+                                Quantity</label>
+                            <div class="input-group input-group-lg">
+                                <input type="number" class="form-control bg-light border-0 py-3 fw-bold" id="quantity"
+                                    name="quantity" step="0.5" min="0.5" placeholder="Amount in Litres" required>
+                                <span class="input-group-text bg-light border-0 fw-bold text-muted">Litres</span>
+                            </div>
+                            <div class="x-small text-muted mt-2">Adjust based on your daily household consumption.</div>
+                        </div>
+
+                        <div class="d-grid gap-3">
+                            <button type="submit"
+                                class="btn btn-primary btn-lg rounded-pill py-3 fw-bold shadow-premium">Confirm & Place
+                                Order</button>
+                            <a href="{{ url_for('consumer_dashboard') }}"
+                                class="btn btn-light rounded-pill py-3 fw-bold text-muted border-0">Back to
+                                Marketplace</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <div class="card border-0 shadow-premium p-5 text-center" style="border-radius: 24px;">
+                <div class="mb-4 text-muted opacity-25">
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path>
+                        <path d="m9 12 2 2 4-4"></path>
+                    </svg>
+                </div>
+                <h5 class="fw-bold text-dark">No Active Listings</h5>
+                <p class="text-muted mb-4">This farmer hasn't updated their milk inventory for the upcoming days yet.
+                </p>
+                <a href="{{ url_for('consumer_dashboard') }}" class="btn btn-primary rounded-pill px-4">Browse Other
+                    Farmers</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .listing-select-card {
+        border-radius: 16px;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 2px solid var(--s-200);
+    }
+
+    .listing-select-card.is-closed {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .letter-spacing-1 {
+        letter-spacing: 0.1em;
+    }
+
+    .x-small {
+        font-size: 0.75rem;
+    }
+
+    .bg-primary-soft {
+        background-color: var(--p-50);
+    }
+
+    .border-primary {
+        border-color: var(--p-500) !important;
+    }
+
+    .rounded-xl {
+        border-radius: 16px;
+    }
+
+    .rounded-md {
+        border-radius: 12px;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% block title %}Dairy Products - FarmIO{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header border-0 pb-4">
+    <div class="container animate-fade">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-2 small text-uppercase fw-bold letter-spacing-1">
+                <li class="breadcrumb-item"><a href="{{ url_for('index') }}"
+                        class="text-muted text-decoration-none">Home</a></li>
+                <li class="breadcrumb-item active text-primary" aria-current="page">Derivatives Store</li>
+            </ol>
+        </nav>
+        <h2 class="mb-1 fw-bold display-6">{% if role == 'farmer' %}Supply Chain Optimization{% else %}Value-Added
+            Marketplace{% endif %}</h2>
+        <p class="text-muted mb-0 lead small">{% if role == 'farmer' %}Convert and manage milk-based derivatives{% else
+            %}Premium handmade dairy specialized items{% endif %}</p>
+    </div>
+</div>
+
+<div class="container pb-5">
+    {% if role == 'farmer' %}
+    <!-- Add Product Form Sector -->
+    <div class="card border-0 shadow-premium mb-5 animate-fade" style="border-radius: 20px;">
+        <div class="card-header bg-white border-bottom p-4">
+            <h5 class="mb-0 fw-bold">Register New Product Batch</h5>
+        </div>
+        <div class="card-body p-4 p-md-5">
+            <form method="POST" action="{{ url_for('farmer_products') }}">
+                <div class="row g-4 align-items-end">
+                    <div class="col-md-4">
+                        <label for="product_name"
+                            class="form-label text-uppercase small fw-bold text-muted letter-spacing-1">Standard
+                            Item</label>
+                        <select class="form-select bg-light border-0 py-3 fw-bold" id="product_name" name="product_name"
+                            required>
+                            <option value="" disabled selected>Select Item Type</option>
+                            <option value="Paneer">Paneer (Hand-Pressed)</option>
+                            <option value="Butter">Fresh Farm Butter</option>
+                            <option value="Ghee">Traditional Cow Ghee</option>
+                            <option value="Cheese">Artisanal Cheese</option>
+                            <option value="Curd">Natural Thick Curd</option>
+                            <option value="Buttermilk">Spiced Buttermilk</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="quantity"
+                            class="form-label text-uppercase small fw-bold text-muted letter-spacing-1">Lot
+                            Quantity</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control bg-light border-0 py-3 fw-bold" id="quantity"
+                                name="quantity" step="0.1" min="0.1" placeholder="0.0" required>
+                            <span class="input-group-text bg-light border-0 small text-muted">kg/L</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="price"
+                            class="form-label text-uppercase small fw-bold text-muted letter-spacing-1">Pricing
+                            (Rs/unit)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0 small text-muted">Rs.</span>
+                            <input type="number" class="form-control bg-light border-0 py-3 fw-bold" id="price"
+                                name="price" step="1" min="1" placeholder="0" required>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit"
+                            class="btn btn-primary btn-lg w-100 rounded-pill py-3 fw-bold shadow-premium">Release
+                            Batch</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Products Grid -->
+    <div class="animate-fade" style="animation-delay: 0.1s;">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <h4 class="fw-bold mb-0">Active Product Listings</h4>
+            <span class="text-muted small fw-bold text-uppercase letter-spacing-1">Marketplace Live</span>
+        </div>
+
+        {% if products %}
+        <div class="row g-4">
+            {% for product in products %}
+            <div class="col-md-4 col-lg-3">
+                <div class="card h-100 border-0 shadow-premium transition-all hover-up overflow-hidden"
+                    style="border-radius: 20px;">
+                    <div class="p-0 bg-light text-center border-bottom border-white overflow-hidden"
+                        style="height: 180px;">
+                        <img src="{% if product['product_name']|lower == 'paneer' %}{{ url_for('static', filename='paneer.png') }}
+                                  {% elif product['product_name']|lower == 'butter' %}{{ url_for('static', filename='butter.png') }}
+                                  {% elif product['product_name']|lower == 'ghee' %}{{ url_for('static', filename='ghee.png') }}
+                                  {% elif product['product_name']|lower == 'curd' %}{{ url_for('static', filename='curd.png') }}
+                                  {% else %}{{ url_for('static', filename='generic_dairy.png') }}{% endif %}"
+                            alt="{{ product['product_name'] }}" class="h-100 w-100 object-fit-cover shadow-sm">
+                    </div>
+
+                    <div class="card-body p-4">
+                        <h6 class="fw-bold text-dark mb-1 text-capitalize">{{ product['product_name'] }}</h6>
+                        {% if role == 'consumer' %}
+                        <p class="x-small text-muted mb-3">{{ product['farm_name'] }}</p>
+                        {% endif %}
+
+                        <div class="vstack gap-2 mb-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted small">Available</span>
+                                <span class="fw-bold text-dark">{{ product['quantity'] }} Units</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted small">Price Unit</span>
+                                <span class="fw-bold text-primary">Rs. {{ product['price'] }}</span>
+                            </div>
+                        </div>
+
+                        {% if role == 'farmer' %}
+                        <form method="POST" action="{{ url_for('delete_product', product_id=product['product_id']) }}">
+                            <button type="submit"
+                                class="btn btn-outline-danger btn-sm w-100 rounded-pill fw-bold border-2">Discontinue
+                                Item</button>
+                        </form>
+                        {% else %}
+                        <form method="POST" action="{{ url_for('buy_product', product_id=product['product_id']) }}">
+                            <div class="input-group input-group-sm mb-0">
+                                <input type="number" class="form-control bg-light border-0 py-2" name="quantity"
+                                    min="0.1" max="{{ product['quantity'] }}" step="0.1" placeholder="Qty" required>
+                                <button type="submit"
+                                    class="btn btn-primary px-3 fw-bold rounded-pill-end shadow-sm">Purchase</button>
+                            </div>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="card border-0 shadow-premium p-5 text-center" style="border-radius: 24px;">
+            <div class="mb-4 text-muted opacity-25">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
+                    <path d="M3 6h18"></path>
+                    <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg>
+            </div>
+            <h5 class="fw-bold">Inventory Empty</h5>
+            <p class="text-muted mx-auto" style="max-width: 350px;">{% if role == 'farmer' %}No products listed. Convert
+                your surplus milk into high-demand dairy items today.{% else %}No value-added products are currently
+                available in your region.{% endif %}</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .letter-spacing-1 {
+        letter-spacing: 0.1em;
+    }
+
+    .x-small {
+        font-size: 0.75rem;
+    }
+
+    .rounded-pill-end {
+        border-radius: 0 50rem 50rem 0 !important;
+    }
+
+    .input-group>.form-control:first-child {
+        border-radius: 50rem 0 0 50rem !important;
+        padding-left: 1.25rem;
+    }
+</style>
+{% endblock %}

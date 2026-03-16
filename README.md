@@ -1,214 +1,138 @@
-# PY26057 
-PROJECT TITLE 
+# 🥛 Farmio — Premium Farm-to-Door Milk Platform
 
-          FARMIO – Enhancing Trust and Quality in Farmer-to-Consumer  Applications
+A premium web application that directly connects **local dairy farmers** with **consumers** in their area. Farmio streamlines the supply chain, ensuring pure, fresh milk reaches your doorstep while maximizing earnings for verified farmers.
 
-WORKFLOW OF THE PROJECT :
+---
 
- ┌──────────────────────┐
- │      User Opens      │
- │      FARMIO App      │
- └──────────┬───────────┘
-            │
-            ▼
- ┌──────────────────────┐
- │  Language Selection  │
- │ (14 Regional Langs)  │
- └──────────┬───────────┘
-            │
-            ▼
- ┌──────────────────────┐
- │   User Role Select   │
- │  Farmer / Consumer  │
- └───────┬────────┬────┘
-         │        │
-         │        │
-         ▼        ▼
- ┌────────────┐ ┌─────────────────┐
- │   Farmer   │ │    Consumer     │
- │   Login    │ │  Registration   │
- │  (OTP)     │ │   (Demo)        │
- └─────┬──────┘ └────────┬────────┘
-       │                  │
-       ▼                  ▼
-┌────────────────┐   ┌───────────────────────┐
-│ Farmer Uploads │   │ Consumer Uploads Image │
-│ Product Image  │   │ (Shop Product)         │
-│ / Live Video   │   └──────────┬────────────┘
-└───────┬────────┘              │
-        │                       │
-        ▼                       ▼
- ┌──────────────────────────────────────────┐
- │      AI PROCESSING LAYER (Core)           │
- │                                          │
- │  Custom Vision Model (From Scratch)       │
- │  - Identifies product                     │
- │  - Detects damage / rot / scratches       │
- │  - Generates quality score                │
- └───────────────┬──────────────────────────┘
-                 │
-                 ▼
- ┌──────────────────────────────────────────┐
- │   LLM SUPPORT LAYER (Explanation Only)    │
- │  - Converts AI result into simple text    │
- │  - Translates output into local language  │
- │  - Builds trust via clear explanation     │
- └───────────────┬──────────────────────────┘
-                 │
-                 ▼
- ┌──────────────────────────────────────────┐
- │   Market Price Comparison Module          │
- │  - Fetches current market price           │
- │  - Compares with farmer-listed price      │
- └───────────────┬──────────────────────────┘
-                 │
-                 ▼
- ┌──────────────────────────────────────────┐
- │     Final Output to Consumer              │
- │  - Product image/video                   │
- │  - Quality report                        │
- │  - Price comparison                      │
- │  - Language-specific explanation          │
- └──────────────────────────────────────────┘
+## ✨ Features
 
-WORK DONE TILL NOW :
+### For Farmers
+- **Strategic Dashboard** — Real-time analytics on milk listings, active subscription pipelines, and value-added product inventory.
+- **Supply Chain Management** — Optimized morning/evening listing system with automated remaining quantity calculation.
+- **Batch Processing** — Convert surplus milk into high-value derivatives (Paneer, Ghee, Butter) to ensure zero waste.
+- **Dynamic Order Management** — Tracking system for both instant milk orders and batch product deliveries.
 
-START
-  ↓
-Load Streamlit App
-  ↓
-Set Page Config (Title, Layout)
-  ↓
-Load Logo & Apply UI Styling
-  ↓
-Language Selection (14 Languages)
-  ↓
-Store Language in Session State
-  ↓
-Apply Selected Language to ALL Pages (for now 1 page)
-   ↓
-   ↓
-User Type
-   ├── Farmer
-   │     ↓
-   │  OTP Login
-   │     ↓
-   │  Live Video Verification (DEMO)
-   │     ↓
-   │  Upload Product (photo/video proof)
-   │     ↓
-   │  Farmer Dashboard
-   │
-   └── Consumer
-         ↓
-      OTP Login
-         ↓
-      UPLOADED VIDEO IS VIEWED
-         ↓
-      LLM model is used to identify the fruits uploaded by the user (till now)
-         ↓
-      RECOGNISES AND GIVE THE NAME 
+### For Consumers
+- **Proximity Discovery** — Smart matching with farmers within **7 km**, utilizing high-precision geolocation.
+- **Milk Continuity Plans (Subscriptions)** — 21-day recurring delivery agreements for consistent, worry-free supply.
+- **Vacation Orchestration** — Pause deliveries instantly with integrated vacation mode for any duration.
+- **Integrated Wallet** — Seamless, cashless transactions with a built-in virtual wallet and transaction history.
+- **Marketplace Store** — Purchase artisanal dairy products directly from local farmers.
 
-PROJECT OBJECTIVE:
+---
 
- * The primary objective of FARMIO is to enhance trust, quality
-  transparency, and accessibility in Farmer‑to‑Consumer (F2C) marketplaces. The project aims to:
+## 🎨 Design Aesthetic
 
- * Build consumer trust in farmer‑sold products using visual proof and AI analysis
- 
- * Enable quality verification of agricultural goods through image‑based intelligence
+Farmio features a **Premium Indigo & Slate** visual identity, designed for a professional and trustworthy user experience.
+- **Sophisticated Palette** — Transition from "base green" to a curated Indigo (`#4665f0`) and Slate design system.
+- **Modern Iconography** — Scalable SVG icons and abstract visuals for a clean, professional look.
+- **Responsive Premium UI** — Mobile-first, glassmorphic navigation and shadow-rich components for a high-end feel.
 
- * Reduce price exploitation by enabling market price comparison
+---
 
- * Overcome language and literacy barriers using multi‑lingual and assisted access.
+## 🛠️ Tech Stack
 
- Problem Statement:
+| Layer      | Technology                        |
+|------------|-----------------------------------|
+| Backend    | Python · Flask                    |
+| Database   | SQLite 3                          |
+| Auth       | Werkzeug (password hashing)       |
+| Frontend   | HTML5 · CSS3 (Vanilla) · Jinja2   |
+| Design     | Premium Indigo Design System      |
+| Logic      | JavaScript (ES6+)                 |
 
- Existing Farmer‑to‑Consumer applications face several limitations
-  
- ->Consumers cannot reliably verify the quality of products online
-this makes the farmer difficult to sell their products.
+---
 
- ->No easy way to compare shop prices with farmer prices.
+## 📁 Project Structure
 
- ->Limited regional language support excludes many farmers.
+```
+farmio/                        # Repo root
+├── app.py                     # Core Flask application & business logic
+├── database.db                # SQLite database (auto-created)
+├── static/
+│   ├── css/
+│   │   └── style.css          # Premium design system tokens & styles
+│   └── js/
+│       └── script.js          # Interactive frontend logic
+└── templates/
+    ├── base.html              # Shared layout & navigation
+    ├── index.html             # Landing page with abstract visuals
+    ├── farmer_dashboard.html  # Farmer workspace
+    ├── consumer_dashboard.html # Marketplace discovery
+    ├── subscribe.html         # Subscription configuration
+    ├── subscriptions.html     # Contract management
+    ├── wallet.html            # Financial management
+    ├── vacation.html          # Delivery pause scheduling
+    └── products.html          # Value-added derivatives store
+```
 
- Proposed Solution:
+---
 
-FARMIO addresses these gaps through three core solutions:
+## 🚀 Getting Started
 
-1️. AI‑Based Trust & Quality Verification (Farmer Side):
+### Prerequisites
 
-  ~Farmers upload live‑harvested product images or videos
- 
-  ~A custom‑trained vision‑based deep learning model analyzes the product
+- Python 3.8+
+- pip
 
-  ~The model identifies the product and detects quality issues such as:
+### Installation
 
-    * Scratches
-    * Rotten parts
-    * Physical damage
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Harini007m/farmio.git
+   cd farmio
+   ```
 
-  ~The system generates a quality assessment and review
+2. **Initialize Environment**
+   ```bash
+   python -m venv venv
+   # Windows
+   venv\Scripts\activate
+   ```
 
-  ~The uploaded media and AI review are shown to consumers
-2.Consumer‑Side Image Recognition & Price Comparison:
- Consumers upload product images taken from shops
+3. **Install Dependencies**
+   ```bash
+   pip install flask
+   ```
 
- The same custom‑trained model:
+4. **Launch Application**
+   ```bash
+   python app.py
+   ```
 
-~Identifies the product
-~Evaluates its quality under any condition
-~The system fetches the current market price and compares it with:
-~Farmer‑listed prices in the app
-~Consumers receive a transparent recommendation.
+---
 
-3.Multi‑Lingual & Inclusive Access:
-#The app supports 14+ Indian regional languages
-#language selection is persistent across all pages
-#Designed for simple navigation and assisted usage
+## 🗃️ Database Schema
 
-TECHNOLOGIES USED TILL NOW:
- Frontend & Application Framework:
-Streamlit – Python‑based web application framework for UI, navigation, and interaction.It makes the page to load to the next and give connectivity.
+| Table                 | Description                                      |
+|-----------------------|--------------------------------------------------|
+| `users`               | Unified user accounts with GPS coordinates       |
+| `farmers`             | Verified farmer profiles and farm metadata       |
+| `milk_listings`       | Morning/Evening availability batches             |
+| `orders`              | Instant one-time milk purchase records           |
+| `subscriptions`       | 21-day recurring delivery contracts              |
+| `products`            | Value-added dairy batch listings                 |
+| `product_orders`      | Marketplace transaction records                  |
+| `wallet_transactions` | Comprehensive financial audit log                |
+| `vacation_dates`      | User-scheduled delivery pause dates              |
 
- Programming Language:
-Python – Core language for frontend logic, backend processing, and AI integration.
+---
 
- Authentication:
-2Factor.in SMS OTP API – Secure OTP‑based farmer authentication and customer.
-  Sends OTP via SMS
-  Verifies OTP
-  Confirms farmer identity.
- 
- Multi‑Language Support:
-Dictionary‑based internationalization
-Supports English, Tamil, Telugu, Malayalam, Hindi, Urdu, Kannada, Bengali, Marathi, Gujarati, Punjabi, Assamese, Bhojpuri, Odia.
-  (kept for 1 page as a demo)
+## 📋 Strategic Routes
 
- File Handling & Storage:
-Local file system for storing uploaded images and videos      
+| Route                                  | Role     | Description                       |
+|----------------------------------------|----------|-----------------------------------|
+| `/`                                    | Public   | Landing page with platform stats  |
+| `/consumer/dashboard`                  | Consumer | Proximity-based discovery         |
+| `/consumer/subscribe/<id>`             | Consumer | Configure 21-day continuity plan  |
+| `/consumer/subscriptions`              | Consumer | Manage active supply agreements   |
+| `/consumer/wallet`                     | Consumer | Recharge & track balance          |
+| `/consumer/vacation`                   | Consumer | Schedule delivery pauses          |
+| `/farmer/dashboard`                    | Farmer   | Operation management center       |
+| `/farmer/products`                     | Farmer   | Market derivative batches         |
 
-AI & Machine Learning (Model Development):
-Primary AI (Implemented): LLM Model
+---
 
-Vision‑based deep learning model trained from scratch
-Current dataset: 13,680 fruit images (fresh, scratched, damaged, rotten)
-Planned dataset: 1,75,000+ images across fruits, vegetables, and grains
-Responsible for product identification and quality assessment under varied real‑world conditions.
+## 📄 License
 
-FUTURE INHANCEMENT:
-   LLM TRAINED MODEL FOR IMAGE UPLOADDED BY CONSUMER FOR THE NAME AND THE QUALITY.
-   LLM TRAINED MODEL FOR IMAGE QUALITY VERIFICATION UPLOADED BY FARMER.
-   THE IMPLEMENTATION OF REGIONAL LANGUAGE.
-
-PROJECT OUTCOME:
-Improved trust between farmers and consumers
-
-Transparent quality verification using AI
-
-Empowered consumers with price awareness
-
-Increased farmer participation through regional language support
-
-A scalable foundation for AI‑driven agricultural marketplaces.
+This project is open source and available under the [MIT License](LICENSE).

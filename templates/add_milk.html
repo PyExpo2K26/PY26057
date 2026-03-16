@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% block title %}Add Milk Listing - FarmIO{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="page-header border-0 pb-4">
+    <div class="container animate-fade text-center text-md-start">
+        <h2 class="mb-1 fw-bold display-6">Inventory Management</h2>
+        <p class="text-muted mb-0 lead small">Set up your milk availability for the marketplace</p>
+    </div>
+</div>
+
+<div class="container pb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card border-0 shadow-premium animate-fade" style="border-radius: 24px;">
+                <div class="card-header bg-white border-bottom p-4">
+                    <h5 class="mb-0 fw-bold">New Inventory Entry</h5>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <form method="POST" action="{{ url_for('add_milk') }}">
+                        <div class="mb-4">
+                            <label for="date"
+                                class="form-label text-uppercase small fw-bold text-muted letter-spacing-1">Target
+                                Date</label>
+                            <input type="date" class="form-control bg-light border-0 py-3 fw-bold" id="date" name="date"
+                                value="{{ today }}" required>
+                        </div>
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <label for="total_quantity"
+                                    class="form-label text-uppercase small fw-bold text-muted letter-spacing-1">Supply
+                                    Volume (L)</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control bg-light border-0 py-3 fw-bold"
+                                        id="total_quantity" name="total_quantity" step="0.5" min="0.5" placeholder="0.0"
+                                        required>
+                                    <span class="input-group-text bg-light border-0 fw-bold text-muted">L</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="price_per_litre"
+                                    class="form-label text-uppercase small fw-bold text-muted letter-spacing-1">Unit
+                                    Price (Rs)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0 fw-bold text-muted">Rs.</span>
+                                    <input type="number" class="form-control bg-light border-0 py-3 fw-bold"
+                                        id="price_per_litre" name="price_per_litre" step="0.5" min="1"
+                                        placeholder="60.0" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quality & Freshness -->
+                        <div class="p-4 bg-primary-soft rounded-xl mb-5 border">
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--p-600)"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path>
+                                    <path d="m9 12 2 2 4-4"></path>
+                                </svg>
+                                <h6 class="mb-0 fw-bold text-primary text-uppercase small letter-spacing-1">Freshness
+                                    Protocol</h6>
+                            </div>
+
+                            <div class="mb-2">
+                                <label for="collection_time" class="form-label x-small fw-bold text-muted">Batch Milking
+                                    Time</label>
+                                <input type="time" class="form-control bg-white border-0 py-2 fw-semibold"
+                                    id="collection_time" name="collection_time">
+                                <p class="x-small text-muted mt-2 mb-0">Providing precise milking time increases
+                                    transparency and consumer trust scores.</p>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-3">
+                            <button type="submit"
+                                class="btn btn-primary btn-lg rounded-pill py-3 fw-bold shadow-premium">Publish to
+                                Marketplace</button>
+                            <a href="{{ url_for('farmer_dashboard') }}"
+                                class="btn btn-light rounded-pill py-3 fw-bold text-muted border-0">Discard Entry</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .letter-spacing-1 {
+        letter-spacing: 0.1em;
+    }
+
+    .x-small {
+        font-size: 0.7rem;
+    }
+
+    .bg-primary-soft {
+        background-color: var(--p-50);
+    }
+
+    .rounded-xl {
+        border-radius: 16px;
+    }
+
+    .input-group-text {
+        border-radius: 12px 0 0 12px;
+    }
+
+    .form-control:not(:first-child) {
+        border-radius: 0 12px 12px 0 !important;
+    }
+
+    .input-group>.form-control:not(:first-child):not(:last-child) {
+        border-radius: 0 !important;
+    }
+</style>
+{% endblock %}
