@@ -4,34 +4,108 @@
 {% block content %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
+    /* 1. Premium B2C Milk Theme Variables */
     :root {
-        --p-600: #2563eb;
-        --p-50: #eff6ff;
+        --milk-cream: #FFFAF0;
+        --milk-white: #FFFFFF;
+        --pasture-green: #2E7D32;
+        --pasture-light: #E8F5E9;
+        --pasture-dark: #1b5e20;
+        --earth-brown: #4A3B32;
+        --earth-dark: #2D241E;
+        --sunset-orange: #F57C00;
+        --sunset-light: #FFF3E0;
     }
 
-    .fw-800 {
-        font-weight: 800;
+    /* 2. Smooth Scroller Effect */
+    html {
+        scroll-behavior: smooth;
     }
 
+    body {
+        background-color: var(--milk-cream);
+        font-family: 'Inter', sans-serif;
+        color: var(--earth-brown);
+    }
+
+    .fw-800 { font-weight: 800; }
+
+    /* Map Styling */
     #map {
         height: 450px;
         border-radius: 32px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 20px 40px rgba(46, 125, 50, 0.1);
         margin-bottom: 2.5rem;
-        border: 8px solid white;
+        border: 8px solid var(--milk-white);
         z-index: 1;
     }
 
+    /* 3. Modern Card Format */
     .delivery-card {
         border-radius: 28px;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 1px solid rgba(0, 0, 0, 0.04);
-        background: white;
+        border: 1px solid rgba(46, 125, 50, 0.05);
+        background: var(--milk-white);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
     }
 
     .delivery-card:hover {
         transform: translateY(-8px);
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
+        box-shadow: 0 20px 40px rgba(46, 125, 50, 0.12) !important;
+    }
+
+    /* 4. Proper Button Radius (Pill Shape) */
+    .btn-farm {
+        border-radius: 50px !important;
+        padding: 14px 24px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        letter-spacing: 0.5px;
+        font-size: 0.9rem;
+        border: none;
+    }
+
+    .btn-farm-primary {
+        background-color: var(--pasture-green);
+        color: var(--milk-white);
+        box-shadow: 0 8px 20px rgba(46, 125, 50, 0.2);
+    }
+    
+    .btn-farm-primary:hover {
+        background-color: var(--pasture-dark);
+        color: var(--milk-white);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 25px rgba(46, 125, 50, 0.3);
+    }
+
+    .btn-farm-orange {
+        background-color: var(--sunset-orange);
+        color: var(--milk-white);
+        box-shadow: 0 8px 20px rgba(245, 124, 0, 0.2);
+    }
+    
+    .btn-farm-orange:hover {
+        background-color: #e65100;
+        color: var(--milk-white);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 25px rgba(245, 124, 0, 0.3);
+    }
+
+    .btn-farm-outline {
+        background-color: #FAFAFA;
+        color: var(--earth-dark);
+        border: 1.5px solid rgba(74, 59, 50, 0.1);
+    }
+
+    .btn-farm-outline:hover {
+        background-color: var(--milk-white);
+        border-color: var(--pasture-green);
+        color: var(--pasture-green);
+        transform: translateY(-2px);
     }
 
     .status-badge {
@@ -41,22 +115,6 @@
         border-radius: 100px;
         text-transform: uppercase;
         font-weight: 800;
-    }
-
-    .bg-primary-soft {
-        background-color: var(--p-50);
-    }
-
-    .text-primary {
-        color: var(--p-600) !important;
-    }
-
-    .location-dot {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        display: inline-block;
-        margin-right: 8px;
     }
 
     .route-line {
@@ -71,128 +129,94 @@
         top: 10px;
         bottom: 10px;
         width: 2px;
-        background: #e2e8f0;
+        background: rgba(46, 125, 50, 0.15);
         border-radius: 2px;
     }
 
-    .rounded-xl {
-        border-radius: 20px;
-    }
-
-    .nav-btn {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        transition: all 0.2s;
-    }
-
-    .nav-btn:hover {
-        background: #f1f5f9;
-        border-color: #cbd5e1;
-    }
-
-    /* Custom markers */
-    .marker-pin {
-        width: 30px;
-        height: 30px;
-        border-radius: 50% 50% 50% 0;
-        background: #c30b0e;
-        position: absolute;
-        transform: rotate(-45deg);
-        left: 50%;
-        top: 50%;
-        margin: -15px 0 0 -15px;
-    }
-
-    .marker-pin::after {
-        content: '';
-        width: 24px;
-        height: 24px;
-        margin: 3px 0 0 3px;
-        background: #fff;
-        position: absolute;
-        border-radius: 50%;
-    }
+    .rounded-xl { border-radius: 20px; }
+    .letter-spacing-1 { letter-spacing: 0.08em; }
+    .text-farm { color: var(--pasture-green) !important; }
+    .text-sunset { color: var(--sunset-orange) !important; }
 </style>
 
-<div class="container py-4 mb-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="fw-800 text-dark mb-0">Delivery Partner</h2>
-            <div class="d-flex align-items-center gap-2 mt-1">
-                <span class="status-dot bg-success" style="width: 8px; height: 8px; border-radius: 50%;"></span>
-                <p class="text-muted small mb-0">Active & Ready for Logistics</p>
-            </div>
-        </div>
-        <div class="d-md-block d-none">
-            <div class="p-3 bg-white rounded-xl shadow-sm border d-flex align-items-center gap-3">
-                <div class="bg-primary-soft p-2 rounded-lg">
-                    <svg width="24" height="24" fill="none" stroke="var(--p-600)" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M13 2L3 14h9l-1 8 10-10h-9l1-8z"></path>
-                    </svg>
+<div class="page-header border-0 pb-4 pt-5" style="background: linear-gradient(to bottom, var(--milk-white), var(--milk-cream));">
+    <div class="container animate-fade">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="FarmIO Logo" height="50" onerror="this.style.display='none'">
+                    <span class="badge rounded-pill px-3 py-2 fw-bold text-uppercase" style="background-color: var(--pasture-light); color: var(--pasture-green); letter-spacing: 1px;">Logistics Network</span>
                 </div>
-                <div>
-                    <div class="x-small text-muted fw-bold">OPPORTUNITIES</div>
-                    <div class="fw-800 text-primary">{{ available_tasks|length }} Pending</div>
+                <h2 class="fw-800 text-dark mb-2 display-6">Delivery Partner Portal</h2>
+                <div class="d-flex align-items-center gap-2">
+                    <span style="width: 10px; height: 10px; border-radius: 50%; background-color: var(--pasture-green); box-shadow: 0 0 10px var(--pasture-green);"></span>
+                    <p class="text-muted small mb-0 fw-medium" style="color: var(--earth-brown) !important;">Active & Ready for Farm-to-Home Delivery</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-5 d-none d-lg-block">
+                <div class="shadow-sm" style="height: 140px; border-radius: 24px; overflow: hidden; position: relative;">
+                    <img src="https://images.unsplash.com/photo-1620052737664-58a51bc97858?auto=format&fit=crop&w=800" alt="Fresh milk delivery logistics" style="width: 100%; height: 100%; object-fit: cover;">
+                    <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(to right, rgba(46,125,50,0.8), transparent);"></div>
+                    <div class="position-absolute top-50 start-0 translate-middle-y ms-4 text-white">
+                        <div class="x-small fw-bold letter-spacing-1 opacity-75">OPPORTUNITIES</div>
+                        <div class="fw-800 fs-4">{{ available_tasks|length }} Pending</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Map Visualization -->
-    <div class="position-relative">
+<div class="container py-2 mb-5">
+    <div class="position-relative animate-fade" style="animation-delay: 0.1s;">
         <div id="map"></div>
         <div class="position-absolute bottom-0 start-0 m-4 z-3 d-none d-md-block">
-            <div class="bg-white p-3 rounded-xl shadow-lg border" style="width: 200px;">
-                <h6 class="fw-bold small mb-2 text-uppercase letter-spacing-1">Map Legend</h6>
-                <div class="d-flex align-items-center gap-2 small mb-2">
-                    <span
-                        style="width: 12px; height: 12px; border-radius: 50%; background: #2563eb; display: block;"></span>
-                    <span>Pickup Point</span>
+            <div class="bg-white p-3 rounded-xl shadow-lg border" style="width: 200px; border-color: rgba(46, 125, 50, 0.1) !important;">
+                <h6 class="fw-bold small mb-2 text-uppercase letter-spacing-1" style="color: var(--earth-dark);">Map Legend</h6>
+                <div class="d-flex align-items-center gap-2 small mb-2 text-muted fw-medium">
+                    <span style="width: 12px; height: 12px; border-radius: 50%; background: var(--pasture-green); display: block;"></span>
+                    <span>Farm Pickup</span>
                 </div>
-                <div class="d-flex align-items-center gap-2 small">
-                    <span
-                        style="width: 12px; height: 12px; border-radius: 50%; background: #ff8c00; display: block;"></span>
-                    <span>Customer Drop</span>
+                <div class="d-flex align-items-center gap-2 small text-muted fw-medium">
+                    <span style="width: 12px; height: 12px; border-radius: 50%; background: var(--sunset-orange); display: block;"></span>
+                    <span>Consumer Drop</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Active Tasks Section -->
-    <div class="d-flex align-items-center justify-content-between mb-4">
-        <h4 class="fw-800 mb-0 d-flex align-items-center gap-2">
+    <div class="d-flex align-items-center justify-content-between mb-4 animate-fade" style="animation-delay: 0.2s;">
+        <h4 class="fw-800 mb-0 d-flex align-items-center gap-2 text-dark">
             My Delivery Queue
-            <span class="badge bg-dark rounded-pill" style="font-size: 0.6rem;">{{ my_tasks|length }} TASKS</span>
+            <span class="badge rounded-pill text-white" style="font-size: 0.6rem; background-color: var(--earth-dark);">{{ my_tasks|length }} TASKS</span>
         </h4>
-        <div class="text-muted small">Optimized Route Implementation</div>
+        <div class="small fw-medium" style="color: var(--earth-brown);">Optimized Route Implementation</div>
     </div>
 
     <div class="row g-4 mb-5">
         {% if my_tasks %}
         {% for task in my_tasks %}
-        <div class="col-md-6 col-lg-4">
+        <div class="col-md-6 col-lg-4 animate-fade" style="animation-delay: 0.3s;">
             <div class="card delivery-card h-100 shadow-sm overflow-hidden">
-                <div class="p-3 bg-light border-bottom d-flex justify-content-between align-items-center">
+                <div class="p-3 border-bottom d-flex justify-content-between align-items-center" style="background-color: #FAFAFA;">
                     <div class="d-flex align-items-center gap-2">
                         <span class="fw-bold text-dark">Task #{{ task.delivery_id }}</span>
                     </div>
-                    <span
-                        class="status-badge {% if task.status == 'Accepted' %}bg-warning-subtle text-warning{% else %}bg-info-subtle text-info{% endif %} px-3">
+                    <span class="status-badge {% if task.status == 'Accepted' %}bg-white text-sunset border border-warning{% else %}bg-white text-farm border border-success{% endif %} px-3">
                         {{ task.status }}
                     </span>
                 </div>
                 <div class="card-body p-4">
                     <div class="route-line">
                         <div class="mb-4">
-                            <label class="x-small text-muted fw-bold text-uppercase d-block mb-1">Source /
-                                Society</label>
+                            <label class="x-small text-muted fw-bold text-uppercase d-block mb-1">Source / Farm</label>
                             <div class="fw-bold text-dark lh-sm">
                                 {{ task.pickup_location }}
                             </div>
                         </div>
                         <div class="mb-4">
-                            <label class="x-small text-muted fw-bold text-uppercase d-block mb-1">Destination /
-                                Consumer</label>
+                            <label class="x-small text-muted fw-bold text-uppercase d-block mb-1">Destination / Consumer</label>
                             <div class="fw-bold text-dark lh-sm">
                                 {{ task.delivery_address }}
                             </div>
@@ -201,16 +225,15 @@
 
                     <div class="row g-3 mb-4">
                         <div class="col-6">
-                            <div class="p-3 bg-light rounded-xl h-100">
-                                <div class="x-small text-muted fw-bold text-uppercase">Volume</div>
-                                <div class="fw-800 h5 mb-0">{{ task.quantity }} <span
-                                        class="small font-normal text-muted">Litres</span></div>
+                            <div class="p-3 rounded-xl h-100 text-center" style="background-color: var(--pasture-light);">
+                                <div class="x-small fw-bold text-uppercase text-farm">Volume</div>
+                                <div class="fw-800 h5 mb-0 text-dark">{{ task.quantity }} <span class="small font-normal text-muted">L</span></div>
                             </div>
                         </div>
                         <div class="col-6">
-                            <div class="p-3 bg-light rounded-xl h-100">
-                                <div class="x-small text-muted fw-bold text-uppercase">Window</div>
-                                <div class="fw-800 h5 mb-0">{{ task.delivery_time or '06-08 AM' }}</div>
+                            <div class="p-3 rounded-xl h-100 text-center" style="background-color: #FAFAFA; border: 1px solid rgba(0,0,0,0.05);">
+                                <div class="x-small fw-bold text-uppercase text-muted">Window</div>
+                                <div class="fw-800 h6 mb-0 text-dark mt-1">{{ task.delivery_time or '06-08 AM' }}</div>
                             </div>
                         </div>
                     </div>
@@ -218,13 +241,13 @@
                     <div class="d-grid gap-2">
                         {% if task.status == 'Accepted' %}
                         <form action="{{ url_for('picked_up', delivery_id=task.delivery_id) }}" method="POST">
-                            <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold py-3 shadow-sm">
+                            <button type="submit" class="btn-farm btn-farm-orange w-100">
                                 COLLECTED / PICKED UP
                             </button>
                         </form>
                         {% elif task.status == 'Picked Up' %}
                         <form action="{{ url_for('delivered', delivery_id=task.delivery_id) }}" method="POST">
-                            <button type="submit" class="btn btn-success w-100 rounded-pill fw-bold py-3 shadow-sm">
+                            <button type="submit" class="btn-farm btn-farm-primary w-100">
                                 DELIVER TO CONSUMER
                             </button>
                         </form>
@@ -232,10 +255,9 @@
 
                         <a href="https://www.google.com/maps/dir/?api=1&origin={{ task.pickup_latitude }},{{ task.pickup_longitude }}&destination={{ task.delivery_latitude }},{{ task.delivery_longitude }}&travelmode=driving"
                             target="_blank"
-                            class="btn nav-btn w-100 rounded-pill fw-bold py-3 d-flex align-items-center justify-content-center gap-2">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/3/39/Google_Maps_icon_%282020%29.svg"
-                                width="18" alt="">
-                            <span class="text-dark">Open Global Map</span>
+                            class="btn-farm btn-farm-outline w-100 d-flex align-items-center justify-content-center gap-2 mt-2">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/3/39/Google_Maps_icon_%282020%29.svg" width="16" alt="">
+                            <span>Open Navigation</span>
                         </a>
                     </div>
                 </div>
@@ -243,30 +265,28 @@
         </div>
         {% endfor %}
         {% else %}
-        <div class="col-12">
-            <div class="p-5 text-center bg-light rounded-xl border border-dashed">
-                <div class="mb-3 text-muted">
-                    <svg width="50" height="50" fill="none" stroke="currentColor" stroke-width="1.5"
-                        viewBox="0 0 24 24">
-                        <path
-                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
-                        </path>
-                    </svg>
+        <div class="col-12 animate-fade">
+            <div class="p-5 text-center rounded-xl" style="background-color: var(--milk-white); border: 1px dashed rgba(46, 125, 50, 0.2);">
+                <div class="mb-3 d-flex justify-content-center">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 64px; height: 64px; background-color: var(--pasture-light); color: var(--pasture-green);">
+                        <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                        </svg>
+                    </div>
                 </div>
-                <h5 class="fw-bold">No Deliveries in Queue</h5>
-                <p class="text-muted small">Either you haven't accepted any tasks, or the route is clear!</p>
-                <a href="#available-tasks" class="btn btn-primary rounded-pill px-4 fw-bold">Check Opportunities</a>
+                <h5 class="fw-bold text-dark">No Deliveries in Queue</h5>
+                <p class="small mb-4" style="color: var(--earth-brown);">Either you haven't accepted any tasks, or your route is completely clear!</p>
+                <a href="#available-tasks" class="btn-farm btn-farm-primary">Check Opportunities</a>
             </div>
         </div>
         {% endif %}
     </div>
 
-    <!-- Available Market Section -->
-    <div id="available-tasks">
-        <div class="d-flex align-items-center justify-content-between mb-4">
-            <h4 class="fw-800 mb-0 d-flex align-items-center gap-2">
+    <div id="available-tasks" class="animate-fade" style="animation-delay: 0.4s;">
+        <div class="d-flex align-items-center justify-content-between mb-4 mt-5">
+            <h4 class="fw-800 mb-0 d-flex align-items-center gap-2 text-dark">
                 New Order Requests
-                <span class="badge bg-primary rounded-pill animate-pulse" style="font-size: 0.6rem;">HOT MARKET</span>
+                <span class="badge rounded-pill text-white" style="font-size: 0.6rem; background-color: var(--sunset-orange); animation: pulse 2s infinite;">HOT MARKET</span>
             </h4>
         </div>
 
@@ -274,35 +294,31 @@
             {% if available_tasks %}
             {% for task in available_tasks %}
             <div class="col-md-6">
-                <div class="card delivery-card bg-primary-soft border-primary border-opacity-10 h-100 shadow-sm">
+                <div class="card delivery-card h-100 shadow-sm" style="background-color: var(--pasture-light); border: 1px solid rgba(46, 125, 50, 0.15);">
                     <div class="card-body p-4">
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <div class="d-flex align-items-center gap-2">
-                                <div class="bg-primary text-white x-small fw-bold px-2 py-1 rounded">NEARBY</div>
+                                <div class="text-white x-small fw-bold px-2 py-1 rounded" style="background-color: var(--pasture-green);">NEARBY</div>
                                 <h5 class="fw-800 mb-0 text-dark">{{ task.quantity }}L Supply Task</h5>
                             </div>
-                            <div class="text-end fw-bold text-primary">#{{ task.delivery_id }}</div>
+                            <div class="text-end fw-bold text-farm">#{{ task.delivery_id }}</div>
                         </div>
 
                         <div class="row mb-4">
                             <div class="col-6">
-                                <div class="x-small text-muted fw-bold text-uppercase mb-1">Pickup</div>
+                                <div class="x-small fw-bold text-uppercase mb-1" style="color: var(--earth-brown);">Pickup Farm</div>
                                 <div class="fw-bold text-dark truncate-1 small">{{ task.pickup_location }}</div>
                             </div>
                             <div class="col-6">
-                                <div class="x-small text-muted fw-bold text-uppercase mb-1">Drop-off</div>
+                                <div class="x-small fw-bold text-uppercase mb-1" style="color: var(--earth-brown);">Drop-off</div>
                                 <div class="fw-bold text-dark truncate-1 small">{{ task.delivery_address }}</div>
                             </div>
                         </div>
 
                         <form action="{{ url_for('accept_delivery', delivery_id=task.delivery_id) }}" method="POST">
-                            <button type="submit"
-                                class="btn btn-primary w-100 rounded-pill fw-bold py-2 shadow-sm d-flex align-items-center justify-content-center gap-2">
-                                ACCEPT TASK & RESERVE ROUTE
-                                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
-                                    viewBox="0 0 24 24">
-                                    <path d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                                </svg>
+                            <button type="submit" class="btn-farm btn-farm-primary w-100 gap-2">
+                                ACCEPT & RESERVE ROUTE
+                                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                             </button>
                         </form>
                     </div>
@@ -311,14 +327,22 @@
             {% endfor %}
             {% else %}
             <div class="col-12">
-                <div class="text-center py-5 bg-white rounded-xl border">
-                    <p class="text-muted mb-0 small">Great! All milk orders in your area are currently assigned.</p>
+                <div class="text-center py-5 rounded-xl border" style="background-color: var(--milk-white); border-color: rgba(74, 59, 50, 0.1) !important;">
+                    <p class="mb-0 small" style="color: var(--earth-brown);">Great! All milk orders in your area are currently assigned to drivers.</p>
                 </div>
             </div>
             {% endif %}
         </div>
     </div>
 </div>
+
+<style>
+    @keyframes pulse {
+        0% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.8; transform: scale(1.05); }
+        100% { opacity: 1; transform: scale(1); }
+    }
+</style>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script id="tasks-data" type="application/json">
@@ -330,13 +354,11 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Initialize map
         var map = L.map('map').setView([22.5726, 88.3639], 12);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
+            attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        // Load data from JSON block
         const dataElement = document.getElementById('tasks-data');
         const data = JSON.parse(dataElement.textContent);
         const myTasks = data.my_tasks || [];
@@ -344,63 +366,58 @@
 
         var markers = [];
 
-        // Custom Icons
+        // Updated Map Icons to match Pasture Green and Sunset Orange
         const pickupIcon = L.divIcon({
             className: 'custom-div-icon',
-            html: "<div style='background-color:#2563eb; color:white; border-radius:50%; width:34px; height:34px; display:flex; align-items:center; justify-content:center; border:4px solid white; box-shadow:0 5px 15px rgba(37, 99, 235, 0.4); font-weight:800; font-size:12px;'>P</div>",
+            html: "<div style='background-color:#2E7D32; color:white; border-radius:50%; width:34px; height:34px; display:flex; align-items:center; justify-content:center; border:4px solid white; box-shadow:0 5px 15px rgba(46, 125, 50, 0.4); font-weight:800; font-size:12px;'>P</div>",
             iconSize: [34, 34],
             iconAnchor: [17, 17]
         });
 
         const dropIcon = L.divIcon({
             className: 'custom-div-icon',
-            html: "<div style='background-color:#ff8c00; color:white; border-radius:50%; width:34px; height:34px; display:flex; align-items:center; justify-content:center; border:4px solid white; box-shadow:0 5px 15px rgba(255, 140, 0, 0.4); font-weight:800; font-size:12px;'>D</div>",
+            html: "<div style='background-color:#F57C00; color:white; border-radius:50%; width:34px; height:34px; display:flex; align-items:center; justify-content:center; border:4px solid white; box-shadow:0 5px 15px rgba(245, 124, 0, 0.4); font-weight:800; font-size:12px;'>D</div>",
             iconSize: [34, 34],
             iconAnchor: [17, 17]
         });
 
         if (myTasks.length > 0) {
             myTasks.forEach(task => {
-                // Pickup Marker
                 const p = L.marker([task.pickup_latitude, task.pickup_longitude], { icon: pickupIcon })
                     .addTo(map)
-                    .bindPopup(`<div class='p-2'><div class='fw-800 text-primary mb-1'>PICKUP POINT</div><div class='small'>${task.pickup_location}</div></div>`);
+                    .bindPopup(`<div class='p-2'><div class='fw-800 mb-1' style='color:#2E7D32;'>FARM PICKUP</div><div class='small'>${task.pickup_location}</div></div>`);
                 markers.push(p);
 
-                // Delivery Marker
                 const d = L.marker([task.delivery_latitude, task.delivery_longitude], { icon: dropIcon })
                     .addTo(map)
-                    .bindPopup(`<div class='p-2'><div class='fw-800 text-warning mb-1'>DELIVERY POINT</div><div class='small'>${task.delivery_address}</div></div>`);
+                    .bindPopup(`<div class='p-2'><div class='fw-800 mb-1' style='color:#F57C00;'>CONSUMER DROP</div><div class='small'>${task.delivery_address}</div></div>`);
                 markers.push(d);
 
-                // Draw logical route line
+                // Updated Polyline Color
                 L.polyline([
                     [task.pickup_latitude, task.pickup_longitude],
                     [task.delivery_latitude, task.delivery_longitude]
                 ], {
-                    color: '#2563eb',
+                    color: '#2E7D32',
                     weight: 3,
                     dashArray: '8, 12',
-                    opacity: 0.6
+                    opacity: 0.7
                 }).addTo(map);
             });
 
-            // Adjust map to fit markers
             const group = new L.featureGroup(markers);
             map.fitBounds(group.getBounds().pad(0.2));
         } else if (availableTasks.length > 0) {
-            // Show available ones if no active
             availableTasks.forEach(task => {
                 L.marker([task.pickup_latitude, task.pickup_longitude], {
                     icon: L.divIcon({
                         className: 'custom-div-icon',
-                        html: "<div style='background-color:#94a3b8; color:white; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; border:3px solid white; box-shadow:0 2px 8px rgba(0,0,0,0.1); font-weight:bold; font-size:10px;'>!</div>",
+                        html: "<div style='background-color:#F57C00; color:white; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; border:3px solid white; box-shadow:0 2px 8px rgba(0,0,0,0.1); font-weight:bold; font-size:10px;'>!</div>",
                         iconSize: [24, 24],
                         iconAnchor: [12, 12]
                     })
                 }).addTo(map).bindPopup(`Available Opportunity: ${task.quantity}L`);
                 
-                // Also add to fitBounds
                 markers.push(L.marker([task.pickup_latitude, task.pickup_longitude]));
             });
             
@@ -411,6 +428,4 @@
         }
     });
 </script>
-
-
 {% endblock %}

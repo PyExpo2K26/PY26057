@@ -2,119 +2,238 @@
 {% block title %}Add Milk Listing - FarmIO{% endblock %}
 
 {% block content %}
-<!-- Header -->
-<div class="page-header border-0 pb-4">
-    <div class="container animate-fade text-center text-md-start">
-        <h2 class="mb-1 fw-bold display-6">Inventory Management</h2>
-        <p class="text-muted mb-0 lead small">Set up your milk availability for the marketplace</p>
+<style>
+    /* 1. Milk-Based Professional Theme Variables */
+    :root {
+        --milk-cream: #FFFAF0;
+        --milk-white: #FFFFFF;
+        --pasture-green: #2E7D32;
+        --pasture-light: #E8F5E9;
+        --pasture-dark: #1b5e20;
+        --earth-brown: #4A3B32;
+        --earth-dark: #2D241E;
+        --sunset-orange: #F57C00;
+        --sunset-light: #FFF3E0;
+    }
+
+    /* 2. Smooth Scroller Effect */
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        background-color: var(--milk-cream);
+        font-family: 'Inter', sans-serif;
+        color: var(--earth-brown);
+    }
+
+    /* 3. Modern Card Format */
+    .premium-card {
+        background: var(--milk-white);
+        border-radius: 32px;
+        box-shadow: 0 20px 40px -10px rgba(46, 125, 50, 0.08);
+        border: 1px solid rgba(46, 125, 50, 0.05);
+        overflow: hidden;
+    }
+
+    /* 4. Form Inputs */
+    .form-control, .input-group-text {
+        border: 1.5px solid rgba(74, 59, 50, 0.1);
+        background-color: #FCFDFD;
+        color: var(--earth-dark);
+        transition: all 0.3s ease;
+        box-shadow: none;
+    }
+
+    .form-control {
+        border-radius: 14px;
+    }
+
+    .input-group {
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1.5px solid rgba(74, 59, 50, 0.1);
+        background-color: #FCFDFD;
+    }
+
+    .input-group .form-control, .input-group .input-group-text {
+        border: none;
+        background: transparent;
+    }
+
+    .form-control:focus, .input-group:focus-within {
+        border-color: var(--pasture-green);
+        box-shadow: 0 0 0 4px var(--pasture-light);
+        background-color: var(--milk-white);
+    }
+
+    /* 5. Proper Button Radius (Pill Shape) */
+    .btn-farm {
+        border-radius: 50px !important;
+        padding: 14px 24px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-farm-primary {
+        background-color: var(--pasture-green);
+        color: var(--milk-white);
+        border: 2px solid var(--pasture-green);
+        box-shadow: 0 8px 20px rgba(46, 125, 50, 0.25);
+    }
+    
+    .btn-farm-primary:hover {
+        background-color: var(--pasture-dark);
+        border-color: var(--pasture-dark);
+        color: var(--milk-white);
+        transform: translateY(-2px);
+        box-shadow: 0 12px 25px rgba(46, 125, 50, 0.35);
+    }
+
+    .btn-farm-outline {
+        background-color: var(--milk-white);
+        color: var(--pasture-green);
+        border: 2px solid var(--pasture-light);
+    }
+
+    .btn-farm-outline:hover {
+        background-color: var(--pasture-light);
+        border-color: var(--pasture-green);
+        color: var(--pasture-dark);
+        transform: translateY(-2px);
+    }
+
+    .bg-farm-soft {
+        background-color: var(--pasture-light);
+        border: 1px solid rgba(46, 125, 50, 0.1);
+    }
+
+    .text-farm { color: var(--pasture-green) !important; }
+    .letter-spacing-1 { letter-spacing: 0.08em; }
+    .x-small { font-size: 0.75rem; }
+
+    /* Right-side Image Mask */
+    .inventory-img-mask {
+        border-radius: 32px;
+        overflow: hidden;
+        height: 100%;
+        min-height: 400px;
+        box-shadow: 0 20px 40px rgba(46, 125, 50, 0.1);
+    }
+    
+    .inventory-img-mask img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+</style>
+
+<div class="page-header border-0 pb-4 pt-5" style="background: linear-gradient(to bottom, var(--milk-white), var(--milk-cream));">
+    <div class="container animate-fade">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-3 small text-uppercase fw-bold letter-spacing-1">
+                <li class="breadcrumb-item">
+                    <a href="{{ url_for('farmer_dashboard') }}" class="text-decoration-none" style="color: var(--earth-brown); opacity: 0.7;">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item active text-farm" aria-current="page">Inventory</li>
+            </ol>
+        </nav>
+        
+        <div class="d-flex align-items-center gap-3 mb-2">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="FarmIO Logo" height="45" style="object-fit: contain;" onerror="this.style.display='none'">
+            <h2 class="mb-0 fw-bold display-6 text-dark">Inventory Management</h2>
+        </div>
+        <p class="mb-0 lead small" style="color: var(--earth-brown);">Set up your fresh milk availability for the consumer marketplace.</p>
     </div>
 </div>
 
 <div class="container pb-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-6 col-md-8">
-            <div class="card border-0 shadow-premium animate-fade" style="border-radius: 24px;">
+    <div class="row g-5 align-items-stretch">
+        
+        <div class="col-lg-7 col-md-12">
+            <div class="premium-card animate-fade h-100">
                 <div class="card-header bg-white border-bottom p-4">
-                    <h5 class="mb-0 fw-bold">New Inventory Entry</h5>
+                    <h5 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
+                        <svg width="22" height="22" fill="none" stroke="var(--sunset-orange)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                        New Inventory Entry
+                    </h5>
                 </div>
                 <div class="card-body p-4 p-md-5">
                     <form method="POST" action="{{ url_for('add_milk') }}">
                         <div class="mb-4">
-                            <label for="date"
-                                class="form-label text-uppercase small fw-bold text-muted letter-spacing-1">Target
-                                Date</label>
-                            <input type="date" class="form-control bg-light border-0 py-3 fw-bold" id="date" name="date"
-                                value="{{ today }}" required>
+                            <label for="date" class="form-label text-uppercase x-small fw-bold letter-spacing-1 opacity-75" style="color: var(--earth-dark);">Target Date</label>
+                            <input type="date" class="form-control py-3 fw-bold text-dark shadow-none" id="date" name="date" value="{{ today }}" required>
                         </div>
 
                         <div class="row g-4 mb-4">
                             <div class="col-md-6">
-                                <label for="total_quantity"
-                                    class="form-label text-uppercase small fw-bold text-muted letter-spacing-1">Supply
-                                    Volume (L)</label>
+                                <label for="total_quantity" class="form-label text-uppercase x-small fw-bold letter-spacing-1 opacity-75" style="color: var(--earth-dark);">Supply Volume (L)</label>
                                 <div class="input-group">
-                                    <input type="number" class="form-control bg-light border-0 py-3 fw-bold"
-                                        id="total_quantity" name="total_quantity" step="0.5" min="0.5" placeholder="0.0"
-                                        required>
-                                    <span class="input-group-text bg-light border-0 fw-bold text-muted">L</span>
+                                    <input type="number" class="form-control py-3 fw-bold text-dark shadow-none" id="total_quantity" name="total_quantity" step="0.5" min="0.5" placeholder="0.0" required>
+                                    <span class="input-group-text fw-bold text-muted">L</span>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <label for="price_per_litre"
-                                    class="form-label text-uppercase small fw-bold text-muted letter-spacing-1">Unit
-                                    Price (Rs)</label>
+                                <label for="price_per_litre" class="form-label text-uppercase x-small fw-bold letter-spacing-1 opacity-75" style="color: var(--earth-dark);">Unit Price (Rs)</label>
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light border-0 fw-bold text-muted">Rs.</span>
-                                    <input type="number" class="form-control bg-light border-0 py-3 fw-bold"
-                                        id="price_per_litre" name="price_per_litre" step="0.5" min="1"
-                                        placeholder="60.0" required>
+                                    <span class="input-group-text fw-bold text-muted">Rs.</span>
+                                    <input type="number" class="form-control py-3 fw-bold text-dark shadow-none" id="price_per_litre" name="price_per_litre" step="0.5" min="1" placeholder="60.0" required>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Quality & Freshness -->
-                        <div class="p-4 bg-primary-soft rounded-xl mb-5 border">
+                        <div class="p-4 bg-farm-soft rounded-4 mb-5">
                             <div class="d-flex align-items-center gap-2 mb-3">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--p-600)"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--pasture-green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path>
                                     <path d="m9 12 2 2 4-4"></path>
                                 </svg>
-                                <h6 class="mb-0 fw-bold text-primary text-uppercase small letter-spacing-1">Freshness
-                                    Protocol</h6>
+                                <h6 class="mb-0 fw-bold text-farm text-uppercase small letter-spacing-1">Freshness Protocol</h6>
                             </div>
 
                             <div class="mb-2">
-                                <label for="collection_time" class="form-label x-small fw-bold text-muted">Batch Milking
-                                    Time</label>
-                                <input type="time" class="form-control bg-white border-0 py-2 fw-semibold"
-                                    id="collection_time" name="collection_time">
-                                <p class="x-small text-muted mt-2 mb-0">Providing precise milking time increases
-                                    transparency and consumer trust scores.</p>
+                                <label for="collection_time" class="form-label x-small fw-bold text-muted">Batch Milking Time</label>
+                                <input type="time" class="form-control bg-white py-2 fw-semibold shadow-none" id="collection_time" name="collection_time">
+                                <p class="x-small mt-2 mb-0" style="color: var(--earth-brown); opacity: 0.8;">Providing precise milking time increases transparency and consumer trust scores on the marketplace.</p>
                             </div>
                         </div>
 
                         <div class="d-grid gap-3">
-                            <button type="submit"
-                                class="btn btn-primary btn-lg rounded-pill py-3 fw-bold shadow-premium">Publish to
-                                Marketplace</button>
-                            <a href="{{ url_for('farmer_dashboard') }}"
-                                class="btn btn-light rounded-pill py-3 fw-bold text-muted border-0">Discard Entry</a>
+                            <button type="submit" class="btn-farm btn-farm-primary text-uppercase">
+                                Publish to Marketplace
+                            </button>
+                            <a href="{{ url_for('farmer_dashboard') }}" class="btn-farm btn-farm-outline">
+                                Discard Entry
+                            </a>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
+
+        <div class="col-lg-5 d-none d-lg-block">
+            <div class="inventory-img-mask animate-fade" style="animation-delay: 0.2s;">
+                <img src="https://images.unsplash.com/photo-1596733430284-f7437764b1a9?auto=format&fit=crop&w=800" alt="Fresh morning milking at dairy farm">
+                
+                <div class="position-absolute bottom-0 end-0 m-4 p-3 bg-white shadow-lg d-flex align-items-center gap-3" style="border-radius: 20px;">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: var(--pasture-light); color: var(--pasture-green);">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    </div>
+                    <div>
+                        <div class="fw-bold text-dark fs-6 lh-1 mb-1">Direct Supply</div>
+                        <span class="x-small" style="color: var(--earth-brown);">0 Middlemen</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
-
-<style>
-    .letter-spacing-1 {
-        letter-spacing: 0.1em;
-    }
-
-    .x-small {
-        font-size: 0.7rem;
-    }
-
-    .bg-primary-soft {
-        background-color: var(--p-50);
-    }
-
-    .rounded-xl {
-        border-radius: 16px;
-    }
-
-    .input-group-text {
-        border-radius: 12px 0 0 12px;
-    }
-
-    .form-control:not(:first-child) {
-        border-radius: 0 12px 12px 0 !important;
-    }
-
-    .input-group>.form-control:not(:first-child):not(:last-child) {
-        border-radius: 0 !important;
-    }
-</style>
 {% endblock %}

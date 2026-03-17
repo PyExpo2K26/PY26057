@@ -2,54 +2,146 @@
 {% block title %}Subscribe to Milk - FarmIO{% endblock %}
 
 {% block content %}
-<!-- Header -->
-<div class="page-header border-0 pb-4">
-    <div class="container animate-fade">
-        <h2 class="mb-1 fw-bold display-6">Lifecycle Subscription</h2>
-        <p class="text-muted mb-0 lead small">21-Day continuity plan with <span class="text-primary fw-bold">{{
-                farmer['farmer_name'] }}</span></p>
+<style>
+    /* 1. Milk-Based Professional Theme Variables */
+    :root {
+        --milk-cream: #FFFAF0;
+        --milk-white: #FFFFFF;
+        --pasture-green: #2E7D32;
+        --pasture-light: #E8F5E9;
+        --pasture-dark: #1b5e20;
+        --earth-brown: #4A3B32;
+        --earth-dark: #2D241E;
+        --sunset-orange: #F57C00;
+    }
+
+    /* 2. Smooth Scroller Effect */
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        background-color: var(--milk-cream);
+        font-family: 'Inter', sans-serif;
+        color: var(--earth-brown);
+    }
+
+    /* 3. Modern Card & UI Format */
+    .premium-card {
+        background: var(--milk-white);
+        border-radius: 32px;
+        box-shadow: 0 25px 50px -12px rgba(46, 125, 50, 0.12);
+        border: 1px solid rgba(46, 125, 50, 0.05);
+        overflow: hidden;
+    }
+
+    .form-control, .form-select {
+        border-radius: 14px;
+        border: 1.5px solid rgba(74, 59, 50, 0.1);
+        background-color: #FCFDFD;
+        color: var(--earth-dark);
+        transition: all 0.3s ease;
+        box-shadow: none;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--pasture-green);
+        box-shadow: 0 0 0 4px var(--pasture-light);
+        background-color: var(--milk-white);
+    }
+
+    /* 4. Proper Button Radius (Pill Shape) */
+    .btn-farm-primary {
+        background-color: var(--pasture-green);
+        color: var(--milk-white);
+        border-radius: 50px !important;
+        padding: 16px 24px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        border: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(46, 125, 50, 0.25);
+    }
+
+    .btn-farm-primary:hover {
+        background-color: var(--pasture-dark);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 25px rgba(46, 125, 50, 0.35);
+        color: white;
+    }
+
+    .btn-farm-outline {
+        background-color: var(--milk-white);
+        color: var(--pasture-green);
+        border: 2px solid var(--pasture-light);
+        border-radius: 50px !important;
+        padding: 16px 24px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+    }
+
+    .btn-farm-outline:hover {
+        background-color: var(--pasture-light);
+        border-color: var(--pasture-green);
+        color: var(--pasture-dark);
+    }
+
+    .bg-farm-soft {
+        background-color: var(--pasture-light);
+        border: 1px solid rgba(46, 125, 50, 0.1);
+    }
+
+    .text-farm { color: var(--pasture-green) !important; }
+    .letter-spacing-1 { letter-spacing: 0.08em; }
+    .x-small { font-size: 0.75rem; }
+</style>
+
+<div class="page-header border-0 pb-4 pt-5" style="background: linear-gradient(to bottom, var(--milk-white), var(--milk-cream));">
+    <div class="container animate-fade text-center text-md-start">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="FarmIO Logo" height="50" class="mb-3" style="object-fit: contain;" onerror="this.style.display='none'">
+        
+        <h2 class="mb-2 fw-bold display-6 text-dark">Setup Daily Delivery</h2>
+        <p class="mb-0 lead small" style="color: var(--earth-brown);">21-Day continuity plan with <span class="text-farm fw-bold">{{ farmer['farmer_name'] }}</span></p>
     </div>
 </div>
 
 <div class="container pb-5">
     <div class="row justify-content-center">
         <div class="col-lg-6 col-md-8">
-            <div class="card border-0 shadow-premium animate-fade" style="border-radius: 24px;">
+            <div class="premium-card animate-fade">
                 <div class="card-header bg-white border-bottom p-4">
-                    <h5 class="mb-0 fw-bold">Plan Configuration</h5>
+                    <h5 class="mb-0 fw-bold d-flex align-items-center gap-2 text-dark">
+                        <svg width="24" height="24" fill="none" stroke="var(--pasture-green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        Subscription Details
+                    </h5>
                 </div>
                 <div class="card-body p-4 p-md-5">
-                    <div class="p-4 bg-primary-soft rounded-xl mb-5 border border-white">
+                    
+                    <div class="p-4 bg-farm-soft rounded-4 mb-5">
                         <div class="d-flex align-items-center gap-2 mb-2">
-                            <svg width="20" height="20" fill="none" stroke="var(--p-600)" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                <path d="M8 2v4"></path>
-                                <path d="M16 2v4"></path>
-                                <rect width="18" height="18" x="3" y="4" rx="2"></rect>
-                                <path d="M3 10h18"></path>
+                            <svg width="20" height="20" fill="none" stroke="var(--pasture-green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
                             </svg>
-                            <h6 class="mb-0 fw-bold text-dark text-uppercase small letter-spacing-1">21-Day Premium
-                                Tenure</h6>
+                            <h6 class="mb-0 fw-bold text-farm text-uppercase small letter-spacing-1">21-Day Premium Tenure</h6>
                         </div>
-                        <p class="x-small text-muted mb-0">Subscription ensures daily reservation of your desired milk
-                            volume. No interruption, direct doorstep logistics included.</p>
+                        <p class="x-small mb-0" style="color: var(--earth-brown);">This subscription ensures daily reservation of your desired milk volume. Enjoy uninterrupted, direct doorstep logistics straight from the farm.</p>
                     </div>
 
                     <form method="POST">
                         <div class="mb-4">
-                            <label for="start_date"
-                                class="form-label text-uppercase small fw-bold text-muted letter-spacing-1">Initiation
-                                Date</label>
-                            <input type="date" class="form-control bg-light border-0 py-3 fw-bold" id="start_date"
-                                name="start_date" min="{{ today }}" required>
+                            <label for="start_date" class="form-label text-uppercase x-small fw-bold letter-spacing-1 opacity-75" style="color: var(--earth-dark);">Delivery Start Date</label>
+                            <input type="date" class="form-control py-3 fw-bold" id="start_date" name="start_date" min="{{ today }}" required>
                         </div>
 
                         <div class="mb-5">
-                            <label for="quantity"
-                                class="form-label text-uppercase small fw-bold text-muted letter-spacing-1">Daily
-                                Allocation</label>
-                            <select class="form-select bg-light border-0 py-3 fw-bold text-dark" id="quantity"
-                                name="quantity" required>
+                            <label for="quantity" class="form-label text-uppercase x-small fw-bold letter-spacing-1 opacity-75" style="color: var(--earth-dark);">Daily Milk Requirement</label>
+                            <select class="form-select py-3 fw-bold text-dark" id="quantity" name="quantity" required>
                                 <option value="0.5">0.5 Litres (Rs. 30/day)</option>
                                 <option value="1.0" selected>1.0 Litres (Rs. 60/day)</option>
                                 <option value="1.5">1.5 Litres (Rs. 90/day)</option>
@@ -58,20 +150,19 @@
                                 <option value="3.0">3.0 Litres (Rs. 180/day)</option>
                             </select>
 
-                            <div
-                                class="mt-4 p-4 rounded-xl bg-primary-soft border border-white shadow-sm d-flex justify-content-between align-items-center">
-                                <span class="x-small fw-bold text-primary text-uppercase">Total Tenure Valuation</span>
-                                <h4 id="priceDisplay" class="mb-0 fw-bold text-primary">Rs. 1260.00</h4>
+                            <div class="mt-4 p-4 rounded-4 shadow-sm d-flex justify-content-between align-items-center" style="background-color: var(--pasture-light); border: 1px solid rgba(46, 125, 50, 0.1);">
+                                <span class="x-small fw-bold text-farm text-uppercase letter-spacing-1">Estimated 21-Day Total</span>
+                                <h4 id="priceDisplay" class="mb-0 fw-bold text-farm transition-all">Rs. 1260.00</h4>
                             </div>
                         </div>
 
-                        <div class="d-grid gap-3">
-                            <button type="submit"
-                                class="btn btn-primary btn-lg rounded-pill py-3 fw-bold shadow-premium">Activate &
-                                Subscribe</button>
-                            <a href="{{ url_for('consumer_dashboard') }}"
-                                class="btn btn-light rounded-pill py-3 fw-bold text-muted border-0">Return to
-                                Marketplace</a>
+                        <div class="d-grid gap-3 mt-5">
+                            <button type="submit" class="btn-farm-primary text-uppercase">
+                                Activate & Subscribe
+                            </button>
+                            <a href="{{ url_for('consumer_dashboard') }}" class="btn-farm-outline text-center text-decoration-none">
+                                Return to Marketplace
+                            </a>
                         </div>
                     </form>
                 </div>
@@ -79,24 +170,6 @@
         </div>
     </div>
 </div>
-
-<style>
-    .letter-spacing-1 {
-        letter-spacing: 0.1em;
-    }
-
-    .x-small {
-        font-size: 0.75rem;
-    }
-
-    .bg-primary-soft {
-        background-color: var(--p-50);
-    }
-
-    .rounded-xl {
-        border-radius: 16px;
-    }
-</style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -107,7 +180,17 @@
             const qty = parseFloat(quantitySelect.value);
             const dailyPrice = (qty / 0.5) * 30;
             const total = dailyPrice * 21;
+            
+            // Text update
             priceDisplay.textContent = `Rs. ${total.toFixed(2)}`;
+            
+            // Subtle visual pop animation for professional feel
+            priceDisplay.style.transform = 'scale(1.08)';
+            priceDisplay.style.color = 'var(--sunset-orange)';
+            setTimeout(() => {
+                priceDisplay.style.transform = 'scale(1)';
+                priceDisplay.style.color = 'var(--pasture-green)';
+            }, 250);
         }
 
         quantitySelect.addEventListener('change', updatePrice);

@@ -2,170 +2,233 @@
 {% block title %}Register - FarmIO{% endblock %}
 
 {% block content %}
+<style>
+    /* 1. Milk-Based Professional Theme Variables (Original) */
+    :root {
+        --milk-cream: #FFFAF0;
+        --milk-white: #FFFFFF;
+        --pasture-green: #2E7D32;
+        --pasture-light: #E8F5E9;
+        --pasture-dark: #1b5e20;
+        --earth-brown: #4A3B32;
+        --earth-dark: #2D241E;
+        --sunset-orange: #F57C00;
+    }
+
+    /* 2. Smooth Scroller Effect */
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        background-color: var(--milk-cream);
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* 3. Modern Auth Card Format */
+    .auth-card {
+        background: var(--milk-white);
+        border-radius: 32px;
+        padding: 3rem;
+        box-shadow: 0 25px 50px -12px rgba(46, 125, 50, 0.15);
+        border: 1px solid rgba(46, 125, 50, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .auth-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 120px;
+        background: linear-gradient(to bottom, var(--pasture-light), transparent);
+        opacity: 0.6;
+        z-index: 0;
+    }
+
+    .auth-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* 4. Input Fields Styling */
+    .form-control, .form-select {
+        border-radius: 14px;
+        border: 1.5px solid rgba(74, 59, 50, 0.1);
+        background-color: #FCFDFD;
+        color: var(--earth-dark);
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--pasture-green);
+        box-shadow: 0 0 0 4px var(--pasture-light);
+        background-color: var(--milk-white);
+    }
+
+    .form-control::placeholder {
+        color: rgba(74, 59, 50, 0.4);
+    }
+
+    /* 5. Proper Button Radius (Pill Shape) */
+    .btn-farm-primary {
+        background-color: var(--pasture-green);
+        color: var(--milk-white);
+        border-radius: 50px !important; 
+        padding: 16px 24px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        border: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(46, 125, 50, 0.25);
+    }
+
+    .btn-farm-primary:hover {
+        background-color: var(--pasture-dark);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 25px rgba(46, 125, 50, 0.35);
+        color: white;
+    }
+
+    .btn-farm-outline {
+        background-color: var(--milk-white);
+        color: var(--pasture-green);
+        border: 1.5px solid var(--pasture-green);
+        border-radius: 50px !important;
+        transition: all 0.3s ease;
+    }
+
+    .btn-farm-outline:hover {
+        background-color: var(--pasture-light);
+    }
+
+    .text-farm { color: var(--pasture-green) !important; }
+    .text-earth { color: var(--earth-brown) !important; }
+    .letter-spacing-1 { letter-spacing: 0.08em; }
+    .x-small { font-size: 0.75rem; }
+    
+    .bg-farm-soft {
+        background-color: var(--pasture-light);
+        border: 1px solid rgba(46, 125, 50, 0.1);
+    }
+</style>
+
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-lg-6 col-md-8">
-            <div class="auth-card border-0 animate-fade shadow-premium" style="border-radius: 32px;">
-                <div class="text-center mb-5">
-                    <div class="brand-icon mx-auto mb-3" style="width: 50px; height: 50px; font-size: 1.5rem;">F</div>
-                    <h2 class="fw-bold text-dark">Join the Movement</h2>
-                    <p class="text-muted small">Choose your path in the direct farm ecosystem</p>
-                </div>
-
-                <form method="POST" action="{{ url_for('register') }}" id="registerForm">
-                    <div class="row g-4 mb-4">
-                        <div class="col-md-6">
-                            <label for="name"
-                                class="form-label text-uppercase small fw-bold text-muted letter-spacing-1">Full
-                                Identity</label>
-                            <input type="text" class="form-control bg-light border-0 py-3" id="name" name="name"
-                                placeholder="John Doe" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="email"
-                                class="form-label text-uppercase small fw-bold text-muted letter-spacing-1">Email
-                                Address</label>
-                            <input type="email" class="form-control bg-light border-0 py-3" id="email" name="email"
-                                placeholder="john@example.com" required>
-                        </div>
+        <div class="col-lg-7 col-md-10">
+            <div class="auth-card animate-fade">
+                <div class="auth-content">
+                    <div class="text-center mb-5">
+                        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="FarmIO Logo" height="65" class="mb-4" style="object-fit: contain;" onerror="this.style.display='none'">
+                        
+                        <h2 class="fw-bold text-dark display-6 mb-2">Create Account</h2>
+                        <p class="text-earth small mb-0">Join the direct farm-to-table ecosystem</p>
                     </div>
 
-                    <div class="row g-4 mb-4">
-                        <div class="col-md-6">
-                            <label for="password"
-                                class="form-label text-uppercase small fw-bold text-muted letter-spacing-1">Security
-                                Key</label>
-                            <input type="password" class="form-control bg-light border-0 py-3" id="password"
-                                name="password" placeholder="••••••••" required minlength="6">
-                            <div class="x-small text-muted mt-2">At least 6 characters</div>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="roleSelect"
-                                class="form-label text-uppercase small fw-bold text-muted letter-spacing-1">User
-                                Role</label>
-                            <select class="form-select bg-light border-0 py-3 fw-bold text-primary" id="roleSelect"
-                                name="role" required>
-                                <option value="" disabled selected>Select Role</option>
-                                <option value="consumer">Consumer (Buyer)</option>
-                                <option value="farmer">Farmer (Seller)</option>
-                                <option value="delivery_partner">Delivery Partner (Delivery Guy)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Location Sector -->
-                    <div class="p-4 bg-primary-soft rounded-xl mb-4 border border-white">
-                        <div class="d-flex align-items-center gap-2 mb-3">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--p-600)"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
-                                <circle cx="12" cy="10" r="3"></circle>
-                            </svg>
-                            <h6 class="mb-0 fw-bold text-primary text-uppercase small letter-spacing-1">Geographic
-                                Precision</h6>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="user_location" class="form-label x-small fw-bold text-muted">Primary Address /
-                                Area</label>
-                            <input type="text" class="form-control bg-white border-0 py-2" id="user_location"
-                                name="user_location" placeholder="e.g. Anand, Gujarat" required>
-                        </div>
-
-                        <div class="row g-3 mb-3">
-                            <div class="col-6">
-                                <label for="user_latitude"
-                                    class="form-label x-small fw-bold text-muted">Latitude</label>
-                                <input type="number" class="form-control bg-white border-0 py-2" id="user_latitude"
-                                    name="user_latitude" step="any" placeholder="GPS Lat" required>
+                    <form method="POST" action="{{ url_for('register') }}" id="registerForm">
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label text-uppercase x-small fw-bold letter-spacing-1 text-earth opacity-75">Full Identity</label>
+                                <input type="text" class="form-control py-3" id="name" name="name" placeholder="John Doe" required>
                             </div>
-                            <div class="col-6">
-                                <label for="user_longitude"
-                                    class="form-label x-small fw-bold text-muted">Longitude</label>
-                                <input type="number" class="form-control bg-white border-0 py-2" id="user_longitude"
-                                    name="user_longitude" step="any" placeholder="GPS Lon" required>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label text-uppercase x-small fw-bold letter-spacing-1 text-earth opacity-75">Email Address</label>
+                                <input type="email" class="form-control py-3" id="email" name="email" placeholder="john@example.com" required>
                             </div>
                         </div>
 
-                        <button type="button"
-                            class="btn btn-white btn-sm w-100 rounded-pill shadow-sm border py-2 text-primary fw-bold d-flex align-items-center justify-content-center gap-2"
-                            id="detectLocationBtn">
-                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.49-4.47-4.03-8.01-8.5-8.5V2h-2v.5C5.97 3.49 2.43 7.03 1.94 11.5H1v2h.94c.49 4.47 4.03 8.01 8.5 8.5V22h2v-.5c4.47-.49 8.01-4.03 8.5-8.5H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z" />
-                            </svg>
-                            Auto-Detect Coordinates
-                        </button>
-                        <div id="locationStatus" class="x-small text-center mt-2 text-muted" style="display:none;">
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <label for="password" class="form-label text-uppercase x-small fw-bold letter-spacing-1 text-earth opacity-75">Security Key</label>
+                                <input type="password" class="form-control py-3" id="password" name="password" placeholder="••••••••" required minlength="6">
+                                <div class="x-small text-muted mt-2">At least 6 characters</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="roleSelect" class="form-label text-uppercase x-small fw-bold letter-spacing-1 text-earth opacity-75">User Role</label>
+                                <select class="form-select py-3 fw-bold text-farm" id="roleSelect" name="role" required>
+                                    <option value="" disabled selected>Select Role</option>
+                                    <option value="consumer">Consumer (Buyer)</option>
+                                    <option value="farmer">Farmer (Seller)</option>
+                                    <option value="delivery_partner">Delivery Partner</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Farmer Dynamic Fields -->
-                    <div id="farmerFields" class="animate-fade" style="display:none; animation-duration: 0.3s;">
-                        <div class="p-4 bg-light rounded-xl mb-4 border">
-                            <h6 class="mb-4 fw-bold text-dark text-uppercase small letter-spacing-1">Farm Enterprise
-                                Details</h6>
+                        <div class="p-4 bg-farm-soft rounded-4 mb-4">
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--pasture-green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                                    <circle cx="12" cy="10" r="3"></circle>
+                                </svg>
+                                <h6 class="mb-0 fw-bold text-farm text-uppercase small letter-spacing-1">Geographic Precision</h6>
+                            </div>
 
                             <div class="mb-3">
-                                <label for="farm_name" class="form-label x-small fw-bold text-muted">Registered Farm
-                                    Name</label>
-                                <input type="text" class="form-control bg-white border py-2" id="farm_name"
-                                    name="farm_name" placeholder="e.g. Green Meadows Dairy" data-required="true">
+                                <label for="user_location" class="form-label x-small fw-bold text-muted">Primary Address / Area</label>
+                                <input type="text" class="form-control py-2" id="user_location" name="user_location" placeholder="e.g. Anand, Gujarat" required>
                             </div>
 
-                            <div class="row g-3">
-                                <div class="col-6 mb-3">
-                                    <label for="milk_capacity" class="form-label x-small fw-bold text-muted">Daily
-                                        Capacity (L)</label>
-                                    <input type="number" class="form-control bg-white border py-2" id="milk_capacity"
-                                        name="milk_capacity" placeholder="50" step="0.5" min="0">
+                            <div class="row g-3 mb-3">
+                                <div class="col-6">
+                                    <label for="user_latitude" class="form-label x-small fw-bold text-muted">Latitude</label>
+                                    <input type="number" class="form-control py-2" id="user_latitude" name="user_latitude" step="any" placeholder="GPS Lat" required>
                                 </div>
-                                <div class="col-6 mb-3">
-                                    <label for="price_per_litre" class="form-label x-small fw-bold text-muted">Base
-                                        Price (Rs/L)</label>
-                                    <input type="number" class="form-control bg-white border py-2" id="price_per_litre"
-                                        name="price_per_litre" placeholder="60" step="0.5" min="0">
+                                <div class="col-6">
+                                    <label for="user_longitude" class="form-label x-small fw-bold text-muted">Longitude</label>
+                                    <input type="number" class="form-control py-2" id="user_longitude" name="user_longitude" step="any" placeholder="GPS Lon" required>
+                                </div>
+                            </div>
+
+                            <button type="button" class="btn btn-farm-outline btn-sm w-100 py-2 fw-bold d-flex align-items-center justify-content-center gap-2" id="detectLocationBtn">
+                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.49-4.47-4.03-8.01-8.5-8.5V2h-2v.5C5.97 3.49 2.43 7.03 1.94 11.5H1v2h.94c.49 4.47 4.03 8.01 8.5 8.5V22h2v-.5c4.47-.49 8.01-4.03 8.5-8.5H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z" />
+                                </svg>
+                                Auto-Detect Coordinates
+                            </button>
+                            <div id="locationStatus" class="x-small text-center mt-2 fw-bold" style="display:none;"></div>
+                        </div>
+
+                        <!-- FARMER SPECIFIC FIELDS (Hidden by default) -->
+                        <div id="farmerFields" class="animate-fade" style="display:none; animation-duration: 0.3s;">
+                            <div class="p-4 rounded-4 mb-4 border" style="background-color: #FAFAFA;">
+                                <h6 class="mb-4 fw-bold text-dark text-uppercase small letter-spacing-1">Farm Enterprise Details</h6>
+
+                                <div class="mb-3">
+                                    <label for="farm_name" class="form-label x-small fw-bold text-muted">Registered Farm Name</label>
+                                    <input type="text" class="form-control py-2" id="farm_name" name="farm_name" placeholder="e.g. Green Meadows Dairy" data-required="true">
+                                </div>
+
+                                <div class="row g-3">
+                                    <div class="col-6 mb-3">
+                                        <label for="milk_capacity" class="form-label x-small fw-bold text-muted">Daily Yield (L)</label>
+                                        <input type="number" class="form-control py-2" id="milk_capacity" name="milk_capacity" placeholder="50" step="0.5" min="0">
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <label for="price_per_litre" class="form-label x-small fw-bold text-muted">Base Price (Rs/L)</label>
+                                        <input type="number" class="form-control py-2" id="price_per_litre" name="price_per_litre" placeholder="60" step="0.5" min="0">
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <button type="submit"
-                        class="btn btn-primary btn-lg w-100 rounded-pill py-3 fw-bold mb-4 shadow-premium">Initialize
-                        Account</button>
+                        <button type="submit" class="btn-farm-primary w-100 mb-4 text-uppercase">
+                            Initialize Account
+                        </button>
 
-                    <div class="text-center">
-                        <p class="mb-0 small text-muted">Already standardized? <a href="{{ url_for('login') }}"
-                                class="text-primary fw-bold">Sign In</a></p>
-                    </div>
-                </form>
+                        <div class="text-center">
+                            <p class="mb-0 small text-earth">Already a member? 
+                                <a href="{{ url_for('login') }}" class="text-farm fw-bold text-decoration-none">Sign In</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
-
-<style>
-    .letter-spacing-1 {
-        letter-spacing: 0.1em;
-    }
-
-    .x-small {
-        font-size: 0.75rem;
-    }
-
-    .bg-primary-soft {
-        background-color: var(--p-50);
-    }
-
-    .btn-white {
-        background: white;
-        color: var(--p-600);
-    }
-
-    .rounded-xl {
-        border-radius: 16px;
-    }
-</style>
 {% endblock %}
 
 {% block scripts %}
@@ -175,6 +238,7 @@
         const farmerFields = document.getElementById('farmerFields');
         const farmInputs = farmerFields.querySelectorAll('input');
 
+        // Logic to show/hide Farmer fields based on Role Selection
         roleSelect.addEventListener('change', function () {
             if (this.value === 'farmer') {
                 farmerFields.style.display = 'block';
@@ -189,20 +253,20 @@
             }
         });
 
-        // Location Detection
+        // Location Detection Logic
         const detectBtn = document.getElementById('detectLocationBtn');
         const statusDiv = document.getElementById('locationStatus');
         const latInput = document.getElementById('user_latitude');
         const lonInput = document.getElementById('user_longitude');
-        const addrInput = document.getElementById('user_location');
 
         detectBtn.addEventListener('click', function () {
             statusDiv.style.display = 'block';
             statusDiv.textContent = "Requesting permission...";
+            statusDiv.className = "x-small text-center mt-2 fw-bold text-muted";
 
             if (!navigator.geolocation) {
-                statusDiv.textContent = "Gps not supported by browser.";
-                statusDiv.classList.add('text-danger');
+                statusDiv.textContent = "GPS not supported by browser.";
+                statusDiv.className = "x-small text-center mt-2 fw-bold text-danger";
                 return;
             }
 
@@ -210,12 +274,12 @@
                 (pos) => {
                     latInput.value = pos.coords.latitude.toFixed(6);
                     lonInput.value = pos.coords.longitude.toFixed(6);
-                    statusDiv.textContent = "Coordinates locked.";
-                    statusDiv.classList.replace('text-muted', 'text-success');
+                    statusDiv.textContent = "Coordinates locked successfully.";
+                    statusDiv.className = "x-small text-center mt-2 fw-bold text-success";
                 },
                 (err) => {
                     statusDiv.textContent = "Unable to retrieve location.";
-                    statusDiv.classList.add('text-danger');
+                    statusDiv.className = "x-small text-center mt-2 fw-bold text-danger";
                 }
             );
         });

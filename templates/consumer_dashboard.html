@@ -2,38 +2,249 @@
 {% block title %}Consumer Dashboard - FarmIO{% endblock %}
 
 {% block content %}
-<!-- Page Header -->
-<div class="page-header border-0 pb-0 mb-5 overflow-hidden position-relative"
-    style="background: linear-gradient(to right, #ffffff, var(--p-50));">
+<style>
+    /* --- 1. BASE THEME & VARIABLES --- */
+    :root {
+        --milk-cream: #FFFAF0;
+        --milk-white: #FFFFFF;
+        --pasture-green: #2E7D32;
+        --pasture-light: #E8F5E9;
+        --pasture-dark: #1b5e20;
+        --earth-brown: #4A3B32;
+        --earth-dark: #2D241E;
+        --sunset-orange: #F57C00;
+        --sunset-light: #FFF3E0;
+        --star-empty: #E0E0E0;
+        --star-filled: #F57C00;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+        background-color: var(--milk-cream);
+        font-family: 'Inter', sans-serif;
+        color: var(--earth-brown);
+    }
+
+    /* --- 2. CARDS & BUTTONS --- */
+    .premium-card {
+        background: var(--milk-white);
+        border-radius: 24px;
+        box-shadow: 0 20px 40px -10px rgba(46, 125, 50, 0.08);
+        border: 1px solid rgba(46, 125, 50, 0.05);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .premium-card:hover {
+        box-shadow: 0 25px 50px -12px rgba(46, 125, 50, 0.12);
+        transform: translateY(-5px);
+    }
+
+    .btn-farm {
+        border-radius: 50px !important;
+        padding: 12px 24px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        letter-spacing: 0.5px;
+        font-size: 0.9rem;
+    }
+
+    .btn-farm-primary {
+        background-color: var(--pasture-green);
+        color: var(--milk-white);
+        border: 2px solid var(--pasture-green);
+        box-shadow: 0 8px 15px rgba(46, 125, 50, 0.2);
+    }
+    
+    .btn-farm-primary:hover {
+        background-color: var(--pasture-dark);
+        border-color: var(--pasture-dark);
+        color: var(--milk-white);
+    }
+
+    .btn-farm-white {
+        background-color: var(--milk-white);
+        color: var(--pasture-green);
+        border: none;
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Utilities */
+    .bg-farm-soft { background-color: var(--pasture-light); color: var(--pasture-green); }
+    .text-farm { color: var(--pasture-green) !important; }
+    .letter-spacing-1 { letter-spacing: 0.08em; }
+    .x-small { font-size: 0.75rem; }
+
+    /* Overlays */
+    .img-overlay-card {
+        background-size: cover;
+        background-position: center;
+        position: relative;
+        z-index: 1;
+    }
+    .img-overlay-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        z-index: -1;
+    }
+    .green-overlay::before { background: linear-gradient(135deg, rgba(46, 125, 50, 0.85), rgba(27, 94, 32, 0.95)); }
+    .orange-overlay::before { background: linear-gradient(135deg, rgba(245, 124, 0, 0.85), rgba(230, 81, 0, 0.95)); }
+
+    /* Tables */
+    .table thead th {
+        background-color: rgba(46, 125, 50, 0.05);
+        color: var(--pasture-green);
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        border-bottom: 2px solid rgba(46, 125, 50, 0.1);
+        padding: 1rem;
+    }
+
+    /* --- 3. STAR RATING STYLES --- */
+    .star-rating-container {
+        display: inline-flex;
+        gap: 5px;
+    }
+
+    .star-rating {
+        display: flex;
+        flex-direction: row-reverse; /* Allows hover highlight effect */
+        justify-content: flex-end;
+    }
+
+    .star-rating span {
+        cursor: pointer;
+        font-size: 1.4rem;
+        color: var(--star-empty);
+        transition: color 0.2s, transform 0.2s;
+    }
+
+    /* Hover Effect: highlight current and previous stars */
+    .star-rating span:hover,
+    .star-rating span:hover ~ span {
+        color: var(--star-filled);
+        transform: scale(1.1);
+    }
+
+    /* Filled State */
+    .star-rating span.filled {
+        color: var(--star-filled);
+        text-shadow: 0 0 5px rgba(245, 124, 0, 0.3);
+    }
+
+    /* Lock after rating */
+    .star-rating.locked {
+        pointer-events: none;
+    }
+
+    /* --- 4. COMPULSORY MODAL STYLES --- */
+    .rating-modal-overlay {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(5px);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 1;
+        transition: opacity 0.3s ease;
+    }
+
+    .rating-modal-content {
+        background: var(--milk-white);
+        padding: 40px;
+        border-radius: 24px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        text-align: center;
+        max-width: 450px;
+        width: 90%;
+        animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
+    @keyframes popIn {
+        0% { transform: scale(0.8); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-stars span {
+        font-size: 3rem !important;
+        margin: 0 5px;
+    }
+</style>
+
+<!-- --- COMPULSORY RATING MODAL LOGIC (FIXED) --- -->
+<!-- We use 'namespace' to find the first unrated order without using 'break' -->
+{% set ns = namespace(unrated_order=none) %}
+{% for order in my_orders %}
+    {% if not ns.unrated_order %}
+        {% if (order['status']|lower == 'delivered' or order['status']|lower == 'completed') and not order.get('rating') %}
+            {% set ns.unrated_order = order %}
+        {% endif %}
+    {% endif %}
+{% endfor %}
+
+{% if ns.unrated_order %}
+<div class="rating-modal-overlay" id="ratingModal">
+    <div class="rating-modal-content">
+        <div class="mb-4">
+            <div class="bg-sunset-soft d-inline-flex p-3 rounded-circle mb-3">
+                <svg width="32" height="32" fill="var(--sunset-orange)" viewBox="0 0 24 24">
+                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                </svg>
+            </div>
+            <h4 class="fw-bold text-dark">Rate Your Experience</h4>
+            <p class="small" style="color: var(--earth-brown);">
+                Your delivery from <strong>{{ ns.unrated_order['farm_name'] }}</strong> is complete.
+                <br>Please provide a rating to continue.
+            </p>
+        </div>
+
+        <!-- Interactive Stars -->
+        <div class="star-rating modal-stars" id="modal-rating-{{ ns.unrated_order['order_id'] }}" data-order-id="{{ ns.unrated_order['order_id'] }}">
+            <span class="star" data-value="5">★</span>
+            <span class="star" data-value="4">★</span>
+            <span class="star" data-value="3">★</span>
+            <span class="star" data-value="2">★</span>
+            <span class="star" data-value="1">★</span>
+        </div>
+        <p class="x-small mt-3 text-muted">Click a star to submit & close</p>
+    </div>
+</div>
+{% endif %}
+
+<!-- --- MAIN DASHBOARD CONTENT --- -->
+<div class="page-header border-0 pb-0 mb-5 overflow-hidden position-relative" style="background: linear-gradient(to bottom, var(--milk-white), var(--milk-cream));">
     <div class="container animate-fade py-5">
         <div class="row align-items-center">
             <div class="col-lg-7">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-3 small text-uppercase fw-bold letter-spacing-1">
-                        <li class="breadcrumb-item"><a href="{{ url_for('index') }}"
-                                class="text-muted text-decoration-none">Home</a></li>
-                        <li class="breadcrumb-item active text-primary" aria-current="page">Marketplace</li>
+                        <li class="breadcrumb-item"><a href="{{ url_for('index') }}" class="text-decoration-none" style="color: var(--earth-brown); opacity: 0.7;">Home</a></li>
+                        <li class="breadcrumb-item active text-farm" aria-current="page">Marketplace</li>
                     </ol>
                 </nav>
-                <h1 class="mb-2 fw-bold display-5">Welcome back, <span class="text-primary">{{ session.get('user_name',
-                        'Consumer') }}</span></h1>
-                <p class="text-muted mb-0 lead-sm">
-                    Discover pure, additive-free milk from verified farms in <span
-                        class="text-dark fw-bold border-bottom border-primary border-2">{{ user_location or 'your area'
-                        }}</span>.
+                <h1 class="mb-2 fw-bold display-5 text-dark">Welcome back, <span class="text-farm">{{ session.get('user_name', 'Consumer') }}</span></h1>
+                <p class="mb-0 lead-sm" style="color: var(--earth-brown);">
+                    Discover pure, additive-free milk from verified farms in <span class="text-dark fw-bold border-bottom border-2" style="border-color: var(--pasture-green) !important;">{{ user_location or 'your area' }}</span>.
                 </p>
             </div>
             <div class="col-lg-5 d-none d-lg-block">
                 <div class="d-flex justify-content-end gap-3">
-                    <div class="p-3 bg-white rounded-xl shadow-premium border border-light text-center"
-                        style="min-width: 120px;">
-                        <div class="text-primary fw-bold display-6 mb-0">{{ farmers|length }}</div>
-                        <div class="x-small text-muted fw-bold text-uppercase">Farms Nearby</div>
+                    <div class="p-3 bg-white shadow-sm border border-light text-center" style="border-radius: 20px; min-width: 120px;">
+                        <div class="text-farm fw-bold display-6 mb-0">{{ farmers|length }}</div>
+                        <div class="x-small fw-bold text-uppercase" style="color: var(--earth-brown);">Farms Nearby</div>
                     </div>
-                    <div class="p-3 bg-white rounded-xl shadow-premium border border-light text-center"
-                        style="min-width: 120px;">
-                        <div class="text-primary fw-bold display-6 mb-0">{{ my_orders|length }}</div>
-                        <div class="x-small text-muted fw-bold text-uppercase">Active Orders</div>
+                    <div class="p-3 bg-white shadow-sm border border-light text-center" style="border-radius: 20px; min-width: 120px;">
+                        <div class="text-farm fw-bold display-6 mb-0">{{ my_orders|length }}</div>
+                        <div class="x-small fw-bold text-uppercase" style="color: var(--earth-brown);">Active Orders</div>
                     </div>
                 </div>
             </div>
@@ -42,246 +253,102 @@
 </div>
 
 <div class="container pb-5">
-    {% if vacation_active %}
-    <div class="alert alert-info border-0 shadow-premium d-flex align-items-center gap-4 p-4 mb-5 animate-fade"
-        style="border-radius: 20px; background: rgba(59, 130, 246, 0.05); border-left: 5px solid var(--p-600) !important;">
-        <div class="bg-primary text-white rounded-xl p-3 shadow-sm">
-            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round" viewBox="0 0 24 24">
-                <path
-                    d="M12 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm3.3 14.71L11 12.41V7h2v4.59l3.71 3.71-1.42 1.41z">
-                </path>
-            </svg>
-        </div>
-        <div>
-            <h6 class="mb-1 fw-bold text-dark">Vacation Mode Active</h6>
-            <p class="mb-0 small text-muted">A delivery pause is scheduled. You can manage intervals in your <a
-                    href="{{ url_for('vacation') }}" class="text-primary fw-bold text-decoration-none">Vacation Command
-                    Center →</a>.</p>
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- Top Utility Console: Wallet & Tomorrow -->
+    <!-- Wallet Cards -->
     <div class="row g-4 mb-5 animate-fade" style="animation-delay: 0.1s;">
-        <!-- Wallet Widget -->
         <div class="col-lg-7">
-            <div class="card h-100 border-0 shadow-premium overflow-hidden border border-white"
-                style="border-radius: 30px; background: linear-gradient(135deg, var(--p-700) 0%, var(--p-900) 100%);">
-                <div class="card-body p-5 position-relative">
-                    <div class="position-absolute top-0 end-0 p-5 opacity-10 scale-150 d-none d-md-block">
-                        <svg width="120" height="120" fill="white" viewBox="0 0 24 24">
-                            <path
-                                d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
-                        </svg>
+            <div class="premium-card h-100" style="background: linear-gradient(135deg, var(--pasture-green) 0%, var(--pasture-dark) 100%); border: none;">
+                <div class="card-body p-5 position-relative z-1">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <div class="bg-white rounded-circle" style="width: 8px; height: 8px; opacity: 0.8;"></div>
+                        <p class="text-uppercase x-small fw-bold text-white opacity-75 letter-spacing-1 mb-0">Virtual Wallet Balance</p>
                     </div>
-                    <div class="position-relative z-1">
-                        <div class="d-flex align-items-center gap-2 mb-2">
-                            <div class="bg-white rounded-circle" style="width: 8px; height: 8px;"></div>
-                            <p class="text-uppercase x-small fw-bold text-white opacity-50 letter-spacing-1 mb-0">
-                                Virtual Wallet Balance</p>
-                        </div>
-                        <h1 class="fw-bold mb-4 text-white display-4">Rs. {{ "%.2f"|format(session.get('wallet_balance',
-                            0)) }}</h1>
-                        <div class="d-flex gap-3">
-                            <a href="{{ url_for('wallet') }}"
-                                class="btn btn-white rounded-pill px-4 py-2 fw-bold text-primary bg-white border-0 shadow-lg transition-all hover-up">Add
-                                Credits</a>
-                            <a href="{{ url_for('wallet') }}"
-                                class="btn btn-outline-light rounded-pill px-4 py-2 fw-bold border-opacity-25 border-white">History</a>
-                        </div>
+                    <h1 class="fw-bold mb-4 text-white display-4">Rs. {{ "%.2f"|format(session.get('wallet_balance', 0)) }}</h1>
+                    <div class="d-flex gap-3">
+                        <a href="{{ url_for('wallet') }}" class="btn-farm btn-farm-white">Add Credits</a>
+                        <a href="{{ url_for('wallet') }}" class="btn-farm text-white" style="border: 2px solid rgba(255,255,255,0.3);">History</a>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Tomorrow's Delivery Widget -->
         <div class="col-lg-5">
-            <div class="card h-100 border-0 shadow-premium bg-white border border-light" style="border-radius: 30px;">
+            <div class="premium-card h-100">
                 <div class="card-body p-5 d-flex flex-column justify-content-center">
                     <div class="d-flex align-items-center gap-4 mb-4">
-                        <div class="bg-primary-soft text-primary p-4 rounded-2xl shadow-sm">
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <div class="bg-farm-soft p-4 rounded-circle shadow-sm">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
                                 <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                             </svg>
                         </div>
                         <div>
-                            <p class="mb-0 small fw-bold text-muted text-uppercase letter-spacing-1">Next Fulfillment
-                            </p>
+                            <p class="mb-0 small fw-bold text-uppercase letter-spacing-1" style="color: var(--earth-brown);">Next Fulfillment</p>
                             <h4 class="mb-0 fw-bold text-dark">Tomorrow, 07:00 AM</h4>
                         </div>
                     </div>
-                    <div class="p-3 bg-light rounded-xl border border-dashed border-primary border-opacity-25">
-                        <p class="mb-0 x-small text-muted fw-medium text-center">Place your order before <span
-                                class="text-primary fw-bold">10:00 PM tonight</span> to guarantee reservation.</p>
+                    <div class="p-3 rounded-4" style="background-color: #FAFAFA; border: 1px solid rgba(46, 125, 50, 0.15);">
+                        <p class="mb-0 x-small fw-medium text-center" style="color: var(--earth-brown);">Place your order before <span class="text-farm fw-bold">10:00 PM tonight</span> to guarantee reservation.</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- New: Dairy Shop Upsell -->
-    <div class="row g-4 mb-5 animate-fade" style="animation-delay: 0.2s;">
-        <div class="col-12">
-            <div class="card border-0 shadow-premium p-4 h-100 overflow-hidden position-relative"
-                style="border-radius: 28px; background: linear-gradient(135deg, var(--p-600), var(--p-900)) !important;">
-                <div class="position-absolute bottom-0 end-0 p-3 opacity-10">
-                    <svg width="100" height="100" fill="white" viewBox="0 0 24 24">
-                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                    </svg>
-                </div>
-                <div class="row align-items-center position-relative z-1">
-                    <div class="col-md-9">
-                        <h5 class="text-white fw-bold mb-1">Add Artisanal Derivatives</h5>
-                        <p class="text-white opacity-100 small mb-0">Complete your milk order with hand-pressed Paneer,
-                            Pure Ghee, and fresh Cream from the Dairy Shop.</p>
-                    </div>
-                    <div class="col-md-3 text-md-end mt-3 mt-md-0">
-                        <a href="{{ url_for('consumer_products') }}"
-                            class="btn btn-white rounded-pill fw-bold text-primary px-4 bg-white border-0 shadow-lg transition-all hover-up">Visit
-                            Dairy Shop →</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Farmer Marketplace Section -->
-    <div class="d-flex justify-content-between align-items-end mb-4 animate-fade">
-        <div>
-            <h3 class="fw-bold text-dark mb-1">Nearby Verified Farms</h3>
-            <p class="text-muted small mb-0">Standardized proximity matching within 7km</p>
-        </div>
-        <a href="{{ url_for('consumer_dashboard') }}"
-            class="text-primary x-small fw-bold text-uppercase text-decoration-none">Refresh Feed ⟳</a>
-    </div>
-
-    {% if farmers %}
-    <div class="row g-5 mb-5">
-        {% for farmer in farmers %}
-        <div class="col-lg-4 col-md-6">
-            <div class="card h-100 border-0 shadow-premium transition-all hover-up overflow-hidden bg-white border border-white"
-                style="border-radius: 28px;">
-                <!-- Farmer Visual Header -->
-                <div class="p-4 bg-light bg-opacity-50 border-bottom position-relative"
-                    style="background: linear-gradient(to bottom, #f8fafc, #ffffff);">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="bg-white rounded-2xl shadow-sm p-1 border border-light"
-                            style="width: 64px; height: 64px;">
-                            <div class="bg-primary-soft fw-bold text-primary d-flex align-items-center justify-content-center h-100 w-100"
-                                style="border-radius: 12px; font-size: 1.5rem; font-family: var(--font-heading);">
-                                {{ farmer['farmer_name'][0]|upper }}
-                            </div>
-                        </div>
-                        <div>
-                            <h6 class="mb-1 fw-bold text-dark">{{ farmer['farmer_name'] }}</h6>
-                            <div class="d-flex align-items-center gap-1">
-                                <svg width="12" height="12" fill="var(--p-400)" viewBox="0 0 24 24">
-                                    <path
-                                        d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
-                                </svg>
-                                <p class="mb-0 x-small text-muted fw-medium">{{ farmer['farm_name'] }}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="position-absolute top-0 end-0 p-4">
-                        <div
-                            class="bg-white shadow-sm border border-light text-primary rounded-pill px-3 py-1 x-small fw-bold">
-                            {{ farmer['distance_km'] if farmer['distance_km'] > 0 else '0' }} km
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card-body p-4">
-                    <div class="vstack gap-3 mb-4">
-                        <div
-                            class="d-flex justify-content-between align-items-center p-3 bg-light rounded-xl border border-white">
-                            <span class="text-muted small fw-medium">Availability</span>
-                            <span class="fw-bold text-dark">{{ farmer['remaining'] }} Litres</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center px-2">
-                            <span class="text-muted small">Standard Rate</span>
-                            <span class="fw-bold text-primary display-6 mb-0" style="font-size: 1.25rem;">Rs. {{
-                                farmer['price_per_litre'] }}<small class="text-muted x-small">/L</small></span>
-                        </div>
-                        {% if farmer['collection_time'] %}
-                        <div class="d-flex justify-content-between align-items-center px-2">
-                            <span class="text-muted small">Supply Window</span>
-                            <span class="badge bg-primary-soft text-primary rounded-pill x-small fw-bold px-3 py-2">{{
-                                farmer['collection_time'] }}</span>
-                        </div>
-                        {% endif %}
-                    </div>
-
-                    <div class="row g-2">
-                        <div class="col-6">
-                            <a href="{{ url_for('place_order', farmer_id=farmer['farmer_id']) }}"
-                                class="btn btn-primary w-100 rounded-pill fw-bold shadow-sm py-3 px-2"
-                                style="font-size: 0.85rem;">Instant Order</a>
-                        </div>
-                        <div class="col-6">
-                            <a href="{{ url_for('subscribe', farmer_id=farmer['farmer_id']) }}"
-                                class="btn btn-outline-primary w-100 border-2 rounded-pill fw-bold py-3 px-2"
-                                style="font-size: 0.85rem;">Subscribe</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-    {% else %}
-    <div class="card border-0 shadow-premium p-5 text-center mb-5 animate-fade" style="border-radius: 30px;">
-        <div class="mb-4 text-muted opacity-25">
-            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="22" y1="12" x2="18" y2="12"></line>
-                <line x1="6" y1="12" x2="2" y2="12"></line>
-                <line x1="12" y1="6" x2="12" y2="2"></line>
-                <line x1="12" y1="22" x2="12" y2="18"></line>
-            </svg>
-        </div>
-        <h5 class="fw-bold text-dark">Outside Fulfillment Range</h5>
-        <p class="text-muted mx-auto mb-4" style="max-width: 400px;">No verified farmers found within your proximity. We
-            are continuously onboarding new partners in your area. Check back soon!</p>
-        <a href="{{ url_for('consumer_dashboard') }}" class="btn btn-primary rounded-pill px-5 py-3 fw-bold">Try Global
-            Search</a>
-    </div>
-    {% endif %}
-
-    <!-- Secondary Management Console -->
-    <div class="row g-5 animate-fade" style="animation-delay: 0.3s;">
+    <!-- Order Table Section -->
+    <div class="row g-4 animate-fade" style="animation-delay: 0.3s;">
         <div class="col-lg-8">
-            <div class="card border-0 shadow-premium mb-0 overflow-hidden bg-white border border-light"
-                style="border-radius: 28px;">
+            <div class="premium-card h-100 mb-0 overflow-hidden">
                 <div class="card-header bg-white border-bottom p-4 d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 fw-bold">Recent Fulfillment Logs</h5>
-                    <a href="{{ url_for('consumer_orders') }}"
-                        class="x-small fw-bold text-primary text-decoration-none">View Full History</a>
+                    <h5 class="mb-0 fw-bold text-dark">Recent Fulfillment Logs</h5>
+                    <a href="{{ url_for('consumer_orders') }}" class="x-small fw-bold text-farm text-decoration-none">View Full History</a>
                 </div>
                 <div class="card-body p-0">
                     {% if my_orders %}
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0 align-middle">
-                            <thead class="bg-light bg-opacity-50">
+                        <table class="table table-hover mb-0 align-middle border-0">
+                            <thead>
                                 <tr>
-                                    <th class="ps-4 text-uppercase x-small fw-bold text-muted">Batch ID</th>
-                                    <th class="text-uppercase x-small fw-bold text-muted">Farm Source</th>
-                                    <th class="text-uppercase x-small fw-bold text-muted">Volume</th>
-                                    <th class="text-uppercase x-small fw-bold text-muted text-center">Outcome</th>
+                                    <th class="ps-4">Batch ID</th>
+                                    <th>Farm Source</th>
+                                    <th>Volume</th>
+                                    <th class="text-center">Outcome / Rating</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for order in my_orders %}
-                                <tr class="border-bottom-0">
-                                    <td class="ps-4 text-muted small">#{{ order['order_id'] }}</td>
-                                    <td class="fw-bold text-dark py-4">{{ order['farm_name'] }}</td>
+                                <tr>
+                                    <td class="ps-4 small" style="color: var(--earth-brown);">#{{ order['order_id'] }}</td>
+                                    <td class="fw-bold text-dark py-3">{{ order['farm_name'] }}</td>
                                     <td class="fw-medium text-dark">{{ order['quantity'] }} Litres</td>
-                                    <td class="text-center">
-                                        <span class="badge-status {{ order['status'] }}">{{ order['status'] }}</span>
+                                    <td class="text-center align-middle">
+                                        {% if order['status']|lower == 'delivered' or order['status']|lower == 'completed' %}
+                                            <div class="d-flex flex-column align-items-center gap-1">
+                                                <div class="star-rating-container">
+                                                    {% if order.get('rating') %}
+                                                        <!-- Static Display of Existing Rating -->
+                                                        <div class="star-rating locked">
+                                                            {% for i in range(1, 6) %}
+                                                                <span class="star {% if i <= order['rating'] %}filled{% endif %}">★</span>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% else %}
+                                                        <!-- Interactive Rating Widget -->
+                                                        <div class="star-rating" id="rating-{{ order['order_id'] }}" data-order-id="{{ order['order_id'] }}">
+                                                            <span class="star" data-value="5">★</span>
+                                                            <span class="star" data-value="4">★</span>
+                                                            <span class="star" data-value="3">★</span>
+                                                            <span class="star" data-value="2">★</span>
+                                                            <span class="star" data-value="1">★</span>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                                <span class="badge rounded-pill bg-farm-soft text-farm x-small">Delivered</span>
+                                            </div>
+                                        {% elif order['status']|lower == 'pending' or order['status']|lower == 'processing' %}
+                                            <span class="badge rounded-pill px-3 py-2 fw-medium text-white" style="background-color: var(--sunset-orange);">{{ order['status']|capitalize }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary rounded-pill px-3 py-2 fw-medium">{{ order['status']|capitalize }}</span>
+                                        {% endif %}
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -289,31 +356,21 @@
                         </table>
                     </div>
                     {% else %}
-                    <div class="p-5 text-center text-muted small bg-light bg-opacity-25 mt-2">No recent activity found.
-                        Connect with a farmer to begin.</div>
+                    <div class="p-5 text-center small" style="color: var(--earth-brown); background-color: #FAFAFA;">
+                        No recent activity found. Connect with a farmer to begin.
+                    </div>
                     {% endif %}
                 </div>
             </div>
         </div>
+        
         <div class="col-lg-4">
-            <div class="card border-0 shadow-premium p-5 h-100 overflow-hidden position-relative"
-                style="border-radius: 28px; background: linear-gradient(135deg, var(--p-600), var(--p-900)) !important;">
-                <div class="position-absolute bottom-0 end-0 p-3 opacity-25">
-                    <svg width="150" height="150" fill="white" viewBox="0 0 24 24">
-                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                    </svg>
-                </div>
+             <div class="premium-card p-5 h-100 position-relative img-overlay-card orange-overlay" style="background-image: url('https://images.unsplash.com/photo-1589134712652-3023e13d964f?auto=format&fit=crop&w=800');">
                 <div class="position-relative z-1 h-100 d-flex flex-column">
                     <h4 class="text-white fw-bold mb-3">Explore Derivatives</h4>
-                    <p class="text-white opacity-75 small mb-5">Convert your surplus awareness into premium hand-pressed
-                        Paneer, artisanal Ghee, and fresh Cream.</p>
+                    <p class="text-white opacity-90 small mb-5">Convert your wallet credits into premium dairy products.</p>
                     <div class="mt-auto d-grid gap-3">
-                        <a href="{{ url_for('consumer_products') }}"
-                            class="btn btn-white rounded-pill fw-bold text-primary py-3 bg-white border-0 shadow-lg transition-all hover-up">Products
-                            Marketplace</a>
-                        <a href="{{ url_for('consumer_subscriptions') }}"
-                            class="btn btn-link text-white text-decoration-none x-small fw-bold text-uppercase opacity-75 hover-opacity-100 text-center">View
-                            Subscriptions</a>
+                        <a href="{{ url_for('consumer_products') }}" class="btn-farm btn-farm-white w-100" style="color: var(--sunset-orange);">Products Marketplace</a>
                     </div>
                 </div>
             </div>
@@ -321,25 +378,101 @@
     </div>
 </div>
 
-<style>
-    .bg-primary-soft {
-        background: var(--p-50);
-    }
+<!-- --- JAVASCRIPT --- -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // 1. CORE FUNCTION: Handle Rating Click
+    const handleRating = (orderId, ratingValue, container) => {
+        
+        // A. Visual Update (Fill stars)
+        const stars = container.querySelectorAll('.star');
+        stars.forEach(s => {
+            if (s.dataset.value <= ratingValue) {
+                s.classList.add('filled');
+            } else {
+                s.classList.remove('filled');
+            }
+        });
 
-    .bg-warning-soft {
-        background: #fffbeb;
-    }
+        // B. Lock immediately so user can't click again
+        container.classList.add('locked');
+        container.style.pointerEvents = 'none'; 
 
-    .x-small {
-        font-size: 0.7rem;
-    }
+        // C. Send to Backend
+        fetch(`/rate_order/${orderId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ rating: ratingValue })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            
+            // D. COMPULSORY CLOSE LOGIC
+            // If the modal exists, close it now
+            const modal = document.getElementById('ratingModal');
+            if (modal) {
+                modal.style.opacity = '0';
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            container.classList.remove('locked');
+            container.style.pointerEvents = 'auto';
+        });
+    };
 
-    .rounded-xl {
-        border-radius: 12px;
-    }
+    // 2. EVENT LISTENERS
+    
+    // A. Click Listener
+    document.body.addEventListener('click', function(e) {
+        if (e.target.classList.contains('star')) {
+            const star = e.target;
+            const container = star.closest('.star-rating');
+            
+            if (container.classList.contains('locked')) return;
 
-    .hover-translate-x:hover {
-        transform: translateX(5px);
-    }
-</style>
+            const orderId = container.dataset.orderId;
+            const ratingValue = star.dataset.value;
+
+            handleRating(orderId, ratingValue, container);
+        }
+    });
+
+    // B. Hover Listener
+    document.body.addEventListener('mouseover', function(e) {
+        if (e.target.classList.contains('star')) {
+            const star = e.target;
+            const container = star.closest('.star-rating');
+            if (container.classList.contains('locked')) return;
+
+            const hoverValue = star.dataset.value;
+            const stars = container.querySelectorAll('.star');
+
+            stars.forEach(s => {
+                if (s.dataset.value <= hoverValue) {
+                    s.classList.add('filled');
+                } else {
+                    s.classList.remove('filled');
+                }
+            });
+        }
+    });
+
+    // C. MouseOut Listener (Reset if not locked)
+    document.body.addEventListener('mouseout', function(e) {
+        if (e.target.classList.contains('star')) {
+            const container = e.target.closest('.star-rating');
+            if (container.classList.contains('locked')) return;
+            
+            const stars = container.querySelectorAll('.star');
+            stars.forEach(s => s.classList.remove('filled'));
+        }
+    });
+});
+</script>
 {% endblock %}

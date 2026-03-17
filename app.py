@@ -28,24 +28,48 @@ def close_db(exception):
     db = g.pop('db', None)
     if db is not None:
         db.close()
+def create_admin():
+    db = get_db()
+    # Check if admin already exists
+    admin = db.execute('SELECT * FROM users WHERE email = ?', ('admin@farmio.com',)).fetchone()
+    
+    if not admin:
+        # IMPORTANT: In a real app, hash this password! (e.g., using werkzeug.security)
+        # For now, we use plain text for simplicity.
+        db.execute(
+            'INSERT INTO users (name, email, password, role, is_cleared) VALUES (?, ?, ?, ?, ?)',
+            ('Admin', 'admin@farmio.com', 'admin123', 'admin', 1)
+        )
+        db.commit()
+        print("Admin user created successfully!")
+    else:
+        print("Admin user already exists.")
+
+# Call this function right after init_db() in your main block
+# init_db()
+# create_admin()
 
 
 def init_db():
     db = sqlite3.connect(DATABASE)
     db.execute("PRAGMA foreign_keys = ON")
     db.executescript('''
+        -- UPDATED: Added 'admin' role and 'is_cleared' column
         CREATE TABLE IF NOT EXISTS users (
             user_id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             email TEXT UNIQUE NOT NULL,
             password TEXT NOT NULL,
-            role TEXT NOT NULL CHECK(role IN ('farmer', 'consumer', 'delivery_partner')),
+            role TEXT NOT NULL CHECK(role IN ('farmer', 'consumer', 'delivery_partner', 'admin')),
             location TEXT DEFAULT '',
             latitude REAL DEFAULT 0,
             longitude REAL DEFAULT 0,
-            wallet_balance REAL DEFAULT 0
+            wallet_balance REAL DEFAULT 0,
+            is_cleared INTEGER DEFAULT 1
         );
 
+        -- (The rest of your tables remain exactly the same)
+        
         CREATE TABLE IF NOT EXISTS farmers (
             farmer_id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL UNIQUE,
@@ -156,7 +180,6 @@ def init_db():
     db.commit()
     db.close()
 
-
 # ─── Haversine distance (km) ────────────────────────────────────────────────────
 def haversine(lat1, lon1, lat2, lon2):
     """Return distance in km between two lat/lng points."""
@@ -245,6 +268,11 @@ def register():
             flash('All fields are required.', 'danger')
             return redirect(url_for('register'))
 
+        # SECURITY: Prevent public registration as Admin
+        if role == 'admin':
+            flash('Invalid role selection.', 'danger')
+            return redirect(url_for('register'))
+
         if user_lat == 0 and user_lng == 0:
             flash('Please provide your location by clicking "Detect My Location" or entering coordinates manually.', 'danger')
             return redirect(url_for('register'))
@@ -256,15 +284,23 @@ def register():
             return redirect(url_for('register'))
 
         hashed = generate_password_hash(password)
+
+        # --- NEW LOGIC: Set Clearance Status ---
+        # Delivery Partners need Admin approval (is_cleared = 0)
+        # Farmers and Consumers are auto-approved (is_cleared = 1)
+        is_cleared = 0 if role == 'delivery_partner' else 1
+
+        # UPDATED SQL: Added 'is_cleared' column
         cursor = db.execute(
-            'INSERT INTO users (name, email, password, role, location, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            (name, email, hashed, role, user_location, user_lat, user_lng)
+            'INSERT INTO users (name, email, password, role, location, latitude, longitude, is_cleared) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            (name, email, hashed, role, user_location, user_lat, user_lng, is_cleared)
         )
         user_id = cursor.lastrowid
 
         if role == 'farmer':
             farm_name = request.form.get('farm_name', '').strip() or f"{name}'s Farm"
-            farm_location = request.form.get('location', '').strip() or user_location
+            # Using user_location as default for farm location if not separately provided
+            farm_location = user_location 
             capacity = float(request.form.get('milk_capacity', 0) or 0)
             price = float(request.form.get('price_per_litre', 0) or 0)
             db.execute(
@@ -273,11 +309,16 @@ def register():
             )
 
         db.commit()
-        flash('Registration successful! Please log in.', 'success')
+        
+        # Custom message for Delivery Partners
+        if role == 'delivery_partner':
+            flash('Registration successful! Please wait for Admin clearance before logging in.', 'success')
+        else:
+            flash('Registration successful! Please log in.', 'success')
+            
         return redirect(url_for('login'))
 
     return render_template('register.html')
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

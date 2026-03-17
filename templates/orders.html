@@ -2,28 +2,158 @@
 {% block title %}Orders - FarmIO{% endblock %}
 
 {% block content %}
-<div class="page-header border-0 pb-4">
+<style>
+    /* 1. Premium B2C Milk Theme Variables */
+    :root {
+        --milk-cream: #FFFAF0;
+        --milk-white: #FFFFFF;
+        --pasture-green: #2E7D32;
+        --pasture-light: #E8F5E9;
+        --pasture-dark: #1b5e20;
+        --earth-brown: #4A3B32;
+        --earth-dark: #2D241E;
+        --sunset-orange: #F57C00;
+        --sunset-light: #FFF3E0;
+    }
+
+    /* 2. Smooth Scroller Effect */
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        background-color: var(--milk-cream);
+        font-family: 'Inter', sans-serif;
+        color: var(--earth-brown);
+    }
+
+    /* 3. Modern Card Format */
+    .premium-card {
+        background: var(--milk-white);
+        border-radius: 28px;
+        box-shadow: 0 20px 40px -10px rgba(46, 125, 50, 0.08);
+        border: 1px solid rgba(46, 125, 50, 0.05);
+        overflow: hidden;
+    }
+
+    /* Table Styling */
+    .table thead th {
+        background-color: rgba(46, 125, 50, 0.05);
+        color: var(--pasture-green);
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-bottom: 2px solid rgba(46, 125, 50, 0.1);
+        padding: 1.25rem 1rem;
+    }
+
+    .table td {
+        padding: 1.25rem 1rem;
+        vertical-align: middle;
+        border-bottom: 1px solid rgba(74, 59, 50, 0.05);
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: var(--pasture-light);
+        transition: background-color 0.2s ease;
+    }
+
+    /* Status Select Dropdown (Pill Radius) */
+    .status-select {
+        border-radius: 50px !important;
+        border: 2px solid rgba(46, 125, 50, 0.2) !important;
+        color: var(--pasture-dark);
+        background-color: var(--milk-white);
+        font-weight: 700;
+        font-size: 0.8rem;
+        padding: 8px 16px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .status-select:focus {
+        border-color: var(--pasture-green) !important;
+        box-shadow: 0 0 0 4px var(--pasture-light);
+        outline: none;
+    }
+
+    .status-select:hover {
+        border-color: var(--pasture-green) !important;
+    }
+
+    /* Badges */
+    .badge-status {
+        padding: 6px 14px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: capitalize;
+    }
+    
+    .badge-status.pending, .badge-status.processing {
+        background-color: var(--sunset-light);
+        color: var(--sunset-orange);
+        border: 1px solid rgba(245, 124, 0, 0.2);
+    }
+
+    .badge-status.confirmed, .badge-status.delivered, .badge-status.completed {
+        background-color: var(--pasture-light);
+        color: var(--pasture-green);
+        border: 1px solid rgba(46, 125, 50, 0.2);
+    }
+
+    .badge-status.cancelled {
+        background-color: #FEE2E2;
+        color: #DC2626;
+        border: 1px solid rgba(220, 38, 38, 0.2);
+    }
+
+    /* Utilities */
+    .bg-farm-soft { background-color: var(--pasture-light); color: var(--pasture-green); }
+    .text-farm { color: var(--pasture-green) !important; }
+    .letter-spacing-1 { letter-spacing: 0.08em; }
+    .x-small { font-size: 0.75rem; }
+</style>
+
+<div class="page-header border-0 pb-4 pt-5" style="background: linear-gradient(to bottom, var(--milk-white), var(--milk-cream));">
     <div class="container animate-fade">
-        <h2 class="mb-1 fw-bold display-6">{% if role == 'farmer' %}Order Fulfillment{% else %}Order History{% endif %}
-        </h2>
-        <p class="text-muted mb-0 lead small">Viewing all activity for milk and value-added listings</p>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-3 small text-uppercase fw-bold letter-spacing-1">
+                <li class="breadcrumb-item">
+                    <a href="{% if role == 'farmer' %}{{ url_for('farmer_dashboard') }}{% else %}{{ url_for('consumer_dashboard') }}{% endif %}" class="text-decoration-none" style="color: var(--earth-brown); opacity: 0.7;">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item active text-farm" aria-current="page">Orders Ledger</li>
+            </ol>
+        </nav>
+        
+        <div class="d-flex align-items-center gap-3 mb-2">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="FarmIO Logo" height="45" style="object-fit: contain;" onerror="this.style.display='none'">
+            <h2 class="mb-0 fw-bold display-6 text-dark">
+                {% if role == 'farmer' %}Order Fulfillment{% else %}Order History{% endif %}
+            </h2>
+        </div>
+        <p class="mb-0 lead small" style="color: var(--earth-brown);">Viewing all activity for raw milk and value-added listings</p>
     </div>
 </div>
 
 <div class="container pb-5">
-    <!-- Milk Orders Card -->
-    <div class="card border-0 shadow-premium mb-5 animate-fade" style="border-radius: 20px;">
+    <div class="premium-card mb-5 animate-fade">
         <div class="card-header bg-white border-bottom p-4">
             <div class="d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 fw-bold">Milk Supply Orders</h5>
-                <span class="badge bg-light text-dark rounded-pill px-3 py-2 small">Inventory Type: Milk</span>
+                <h5 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
+                    <svg width="24" height="24" fill="none" stroke="var(--pasture-green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    Milk Supply Orders
+                </h5>
+                <span class="badge bg-farm-soft rounded-pill px-3 py-2 small fw-bold border">Inventory Type: Milk</span>
             </div>
         </div>
         <div class="card-body p-0">
             {% if orders %}
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light">
+                <table class="table table-hover align-middle mb-0 border-0">
+                    <thead>
                         <tr>
                             <th class="ps-4">Order ID</th>
                             <th>{% if role == 'farmer' %}Consumer Target{% else %}Farming Source{% endif %}</th>
@@ -37,38 +167,27 @@
                     <tbody>
                         {% for order in orders %}
                         <tr>
-                            <td class="ps-4 text-muted small">#{{ order['order_id'] }}</td>
+                            <td class="ps-4 text-muted small fw-bold" style="color: var(--earth-brown) !important;">#{{ order['order_id'] }}</td>
                             <td class="fw-bold text-dark">
-                                {% if role == 'farmer' %}{{ order['consumer_name'] }}{% else %}{{ order['farm_name']
-                                }}{% endif %}
+                                {% if role == 'farmer' %}{{ order['consumer_name'] }}{% else %}{{ order['farm_name'] }}{% endif %}
                             </td>
-                            <td class="small">{{ order['order_date'] }}</td>
-                            <td>{{ order['quantity'] }} L</td>
-                            <td class="fw-bold text-primary">Rs. {{ "%.2f"|format(order['quantity'] *
-                                order['price_per_litre']) }}</td>
-                            <td><span class="badge-status {{ order['status'] }}">{{ order['status'] }}</span></td>
+                            <td class="small" style="color: var(--earth-brown);">{{ order['order_date'] }}</td>
+                            <td class="fw-bold text-dark">{{ order['quantity'] }} <span class="small font-normal text-muted">L</span></td>
+                            <td class="fw-bold text-farm">Rs. {{ "%.2f"|format(order['quantity'] * order['price_per_litre']) }}</td>
+                            <td><span class="badge-status {{ order['status']|lower }}">{{ order['status'] }}</span></td>
+                            
                             {% if role == 'farmer' %}
                             <td class="text-end pe-4">
-                                <form method="POST"
-                                    action="{{ url_for('update_order_status', order_id=order['order_id']) }}">
-                                    <select name="status"
-                                        class="form-select form-select-sm rounded-pill border-0 bg-light px-3 py-2 fw-bold small transition-all shadow-sm"
-                                        style="width: 140px;" onchange="this.form.submit()">
-                                        <option value="pending" {% if order['status']=='pending' %}selected{% endif %}>
-                                            Pending</option>
-                                        <option value="confirmed" {% if order['status']=='confirmed' %}selected{% endif
-                                            %}>
-                                            Confirmed</option>
-                                        <option value="delivered" {% if order['status']=='delivered' %}selected{% endif
-                                            %}>
-                                            Delivered</option>
-                                        {% if order['status'] != 'confirmed' and order['status'] != 'delivered' and
-                                        order['status'] != 'cancelled' %}
-                                        <option value="cancelled" {% if order['status']=='cancelled' %}selected{% endif
-                                            %}>
-                                            Cancelled</option>
+                                <form method="POST" action="{{ url_for('update_order_status', order_id=order['order_id']) }}">
+                                    <select name="status" class="form-select status-select d-inline-block" style="width: 150px;" onchange="this.form.submit()">
+                                        <option value="pending" {% if order['status']=='pending' %}selected{% endif %}>Pending</option>
+                                        <option value="confirmed" {% if order['status']=='confirmed' %}selected{% endif %}>Confirmed</option>
+                                        <option value="delivered" {% if order['status']=='delivered' %}selected{% endif %}>Delivered</option>
+                                        
+                                        {% if order['status'] != 'confirmed' and order['status'] != 'delivered' and order['status'] != 'cancelled' %}
+                                            <option value="cancelled" {% if order['status']=='cancelled' %}selected{% endif %}>Cancelled</option>
                                         {% elif order['status'] == 'cancelled' %}
-                                        <option value="cancelled" selected>Cancelled</option>
+                                            <option value="cancelled" selected>Cancelled</option>
                                         {% endif %}
                                     </select>
                                 </form>
@@ -80,32 +199,38 @@
                 </table>
             </div>
             {% else %}
-            <div class="p-5 text-center text-muted">
-                <div class="mb-4 opacity-25">
-                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="8" cy="21" r="1"></circle>
-                        <circle cx="19" cy="21" r="1"></circle>
-                        <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12">
-                        </path>
-                    </svg>
+            <div class="p-5 text-center" style="background-color: #FAFAFA;">
+                <div class="mb-4 d-flex justify-content-center">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 64px; height: 64px; background-color: var(--pasture-light); color: var(--pasture-green);">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="8" cy="21" r="1"></circle>
+                            <circle cx="19" cy="21" r="1"></circle>
+                            <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path>
+                        </svg>
+                    </div>
                 </div>
-                <p>No milk orders found in the database.</p>
+                <h6 class="fw-bold text-dark">No Milk Orders Found</h6>
+                <p class="small text-muted">Your milk supply order history is currently empty.</p>
             </div>
             {% endif %}
         </div>
     </div>
 
-    <!-- Product Orders Card -->
-    <div class="card border-0 shadow-premium animate-fade" style="border-radius: 20px; animation-delay: 0.1s;">
+    <div class="premium-card animate-fade" style="animation-delay: 0.1s;">
         <div class="card-header bg-white border-bottom p-4">
-            <h5 class="mb-0 fw-bold">Value-Added Product Orders</h5>
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
+                    <svg width="24" height="24" fill="none" stroke="var(--sunset-orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4Z"></path><line x1="3" y1="6" x2="21" y2="6"></line></svg>
+                    Value-Added Product Orders
+                </h5>
+                <span class="badge rounded-pill px-3 py-2 small fw-bold border" style="background-color: var(--sunset-light); color: var(--sunset-orange);">Inventory Type: Products</span>
+            </div>
         </div>
         <div class="card-body p-0">
             {% if product_orders %}
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light">
+                <table class="table table-hover align-middle mb-0 border-0">
+                    <thead>
                         <tr>
                             <th class="ps-4">Product Order #</th>
                             <th>{% if role == 'farmer' %}Customer{% else %}Provider{% endif %}</th>
@@ -119,32 +244,27 @@
                     <tbody>
                         {% for po in product_orders %}
                         <tr>
-                            <td class="ps-4 text-muted small">#P{{ po['product_order_id'] }}</td>
-                            <td>{% if role == 'farmer' %}{{ po['consumer_name'] }}{% else %}{{ po['farm_name'] }}{%
-                                endif %}</td>
+                            <td class="ps-4 text-muted small fw-bold" style="color: var(--earth-brown) !important;">#P{{ po['product_order_id'] }}</td>
+                            <td class="fw-bold text-dark">
+                                {% if role == 'farmer' %}{{ po['consumer_name'] }}{% else %}{{ po['farm_name'] }}{% endif %}
+                            </td>
                             <td class="fw-bold text-dark text-capitalize">{{ po['product_name'] }}</td>
-                            <td>{{ po['quantity'] }} Units</td>
-                            <td class="fw-bold text-dark">Rs. {{ "%.2f"|format(po['total_price']) }}</td>
-                            <td><span class="badge-status {{ po['status'] }}">{{ po['status'] }}</span></td>
+                            <td class="fw-medium text-dark">{{ po['quantity'] }} Units</td>
+                            <td class="fw-bold" style="color: var(--sunset-orange);">Rs. {{ "%.2f"|format(po['total_price']) }}</td>
+                            <td><span class="badge-status {{ po['status']|lower }}">{{ po['status'] }}</span></td>
+                            
                             {% if role == 'farmer' %}
                             <td class="text-end pe-4">
-                                <form method="POST"
-                                    action="{{ url_for('update_product_order_status', order_id=po['product_order_id']) }}">
-                                    <select name="status"
-                                        class="form-select form-select-sm rounded-pill border-0 bg-light px-3 py-2 fw-bold small"
-                                        style="width: 140px;" onchange="this.form.submit()">
-                                        <option value="pending" {% if po['status']=='pending' %}selected{% endif %}>
-                                            Pending</option>
-                                        <option value="confirmed" {% if po['status']=='confirmed' %}selected{% endif %}>
-                                            Confirmed</option>
-                                        <option value="delivered" {% if po['status']=='delivered' %}selected{% endif %}>
-                                            Delivered</option>
-                                        {% if po['status'] != 'confirmed' and po['status'] != 'delivered' and
-                                        po['status'] != 'cancelled' %}
-                                        <option value="cancelled" {% if po['status']=='cancelled' %}selected{% endif %}>
-                                            Cancelled</option>
+                                <form method="POST" action="{{ url_for('update_product_order_status', order_id=po['product_order_id']) }}">
+                                    <select name="status" class="form-select status-select d-inline-block" style="width: 150px;" onchange="this.form.submit()">
+                                        <option value="pending" {% if po['status']=='pending' %}selected{% endif %}>Pending</option>
+                                        <option value="confirmed" {% if po['status']=='confirmed' %}selected{% endif %}>Confirmed</option>
+                                        <option value="delivered" {% if po['status']=='delivered' %}selected{% endif %}>Delivered</option>
+                                        
+                                        {% if po['status'] != 'confirmed' and po['status'] != 'delivered' and po['status'] != 'cancelled' %}
+                                            <option value="cancelled" {% if po['status']=='cancelled' %}selected{% endif %}>Cancelled</option>
                                         {% elif po['status'] == 'cancelled' %}
-                                        <option value="cancelled" selected>Cancelled</option>
+                                            <option value="cancelled" selected>Cancelled</option>
                                         {% endif %}
                                     </select>
                                 </form>
@@ -156,7 +276,9 @@
                 </table>
             </div>
             {% else %}
-            <div class="p-5 text-center text-muted small">No product orders recorded yet.</div>
+            <div class="p-5 text-center" style="background-color: #FAFAFA;">
+                <p class="small mb-0" style="color: var(--earth-brown);">No value-added product orders recorded yet.</p>
+            </div>
             {% endif %}
         </div>
     </div>

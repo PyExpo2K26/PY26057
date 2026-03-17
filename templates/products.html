@@ -2,39 +2,158 @@
 {% block title %}Dairy Products - FarmIO{% endblock %}
 
 {% block content %}
-<!-- Page Header -->
-<div class="page-header border-0 pb-4">
+<style>
+    /* 1. Premium B2C Milk Theme Variables */
+    :root {
+        --milk-cream: #FFFAF0;
+        --milk-white: #FFFFFF;
+        --pasture-green: #2E7D32;
+        --pasture-light: #E8F5E9;
+        --pasture-dark: #1b5e20;
+        --earth-brown: #4A3B32;
+        --earth-dark: #2D241E;
+        --sunset-orange: #F57C00;
+        --sunset-light: #FFF3E0;
+    }
+
+    /* 2. Smooth Scroller Effect */
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        background-color: var(--milk-cream);
+        font-family: 'Inter', sans-serif;
+        color: var(--earth-brown);
+    }
+
+    /* 3. Modern Card Format */
+    .premium-card {
+        background: var(--milk-white);
+        border-radius: 28px;
+        box-shadow: 0 20px 40px -10px rgba(46, 125, 50, 0.08);
+        border: 1px solid rgba(46, 125, 50, 0.05);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .premium-card:hover {
+        box-shadow: 0 25px 50px -12px rgba(46, 125, 50, 0.12);
+        transform: translateY(-5px);
+    }
+
+    /* 4. Proper Button Radius (Pill Shape) */
+    .btn-farm {
+        border-radius: 50px !important;
+        padding: 12px 24px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        letter-spacing: 0.5px;
+        border: none;
+    }
+
+    .btn-farm-primary {
+        background-color: var(--pasture-green);
+        color: var(--milk-white);
+        box-shadow: 0 8px 20px rgba(46, 125, 50, 0.2);
+    }
+    
+    .btn-farm-primary:hover {
+        background-color: var(--pasture-dark);
+        color: var(--milk-white);
+        transform: translateY(-2px);
+    }
+
+    .btn-farm-outline-danger {
+        background-color: var(--milk-white);
+        color: #dc3545;
+        border: 2px solid #dc3545;
+        font-size: 0.8rem;
+    }
+
+    .btn-farm-outline-danger:hover {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    /* Input Styling */
+    .form-control, .form-select {
+        border-radius: 50px !important;
+        border: 1.5px solid rgba(74, 59, 50, 0.1);
+        padding-left: 1.5rem;
+        background-color: #FCFDFD;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--pasture-green);
+        box-shadow: 0 0 0 4px var(--pasture-light);
+    }
+
+    /* Purchase Input Group */
+    .purchase-group {
+        border-radius: 50px;
+        overflow: hidden;
+        border: 2px solid var(--pasture-light);
+        background: #FAFAFA;
+    }
+
+    .purchase-group .form-control {
+        border: none !important;
+        background: transparent;
+    }
+
+    .purchase-group .btn {
+        border-radius: 0 50px 50px 0 !important;
+        padding-right: 1.5rem;
+    }
+
+    /* Utilities */
+    .text-farm { color: var(--pasture-green) !important; }
+    .letter-spacing-1 { letter-spacing: 0.08em; }
+    .x-small { font-size: 0.75rem; }
+    .object-fit-cover { object-fit: cover; }
+</style>
+
+<div class="page-header border-0 pb-4 pt-5" style="background: linear-gradient(to bottom, var(--milk-white), var(--milk-cream));">
     <div class="container animate-fade">
         <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-2 small text-uppercase fw-bold letter-spacing-1">
-                <li class="breadcrumb-item"><a href="{{ url_for('index') }}"
-                        class="text-muted text-decoration-none">Home</a></li>
-                <li class="breadcrumb-item active text-primary" aria-current="page">Derivatives Store</li>
+            <ol class="breadcrumb mb-3 small text-uppercase fw-bold letter-spacing-1">
+                <li class="breadcrumb-item"><a href="{{ url_for('index') }}" class="text-decoration-none" style="color: var(--earth-brown); opacity: 0.7;">Home</a></li>
+                <li class="breadcrumb-item active text-farm" aria-current="page">Derivatives Store</li>
             </ol>
         </nav>
-        <h2 class="mb-1 fw-bold display-6">{% if role == 'farmer' %}Supply Chain Optimization{% else %}Value-Added
-            Marketplace{% endif %}</h2>
-        <p class="text-muted mb-0 lead small">{% if role == 'farmer' %}Convert and manage milk-based derivatives{% else
-            %}Premium handmade dairy specialized items{% endif %}</p>
+        
+        <div class="d-flex align-items-center gap-3 mb-2">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="FarmIO Logo" height="45" style="object-fit: contain;" onerror="this.style.display='none'">
+            <h2 class="mb-0 fw-bold display-6 text-dark">
+                {% if role == 'farmer' %}Supply Optimization{% else %}Value-Added Marketplace{% endif %}
+            </h2>
+        </div>
+        <p class="mb-0 lead small" style="color: var(--earth-brown);">
+            {% if role == 'farmer' %}Convert and manage milk-based derivatives{% else %}Premium handmade dairy specialized items directly from the source{% endif %}
+        </p>
     </div>
 </div>
 
 <div class="container pb-5">
     {% if role == 'farmer' %}
-    <!-- Add Product Form Sector -->
-    <div class="card border-0 shadow-premium mb-5 animate-fade" style="border-radius: 20px;">
+    <div class="premium-card mb-5 animate-fade">
         <div class="card-header bg-white border-bottom p-4">
-            <h5 class="mb-0 fw-bold">Register New Product Batch</h5>
+            <h5 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
+                <svg width="22" height="22" fill="none" stroke="var(--pasture-green)" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+                Register New Product Batch
+            </h5>
         </div>
         <div class="card-body p-4 p-md-5">
             <form method="POST" action="{{ url_for('farmer_products') }}">
                 <div class="row g-4 align-items-end">
                     <div class="col-md-4">
-                        <label for="product_name"
-                            class="form-label text-uppercase small fw-bold text-muted letter-spacing-1">Standard
-                            Item</label>
-                        <select class="form-select bg-light border-0 py-3 fw-bold" id="product_name" name="product_name"
-                            required>
+                        <label for="product_name" class="form-label text-uppercase x-small fw-bold text-muted letter-spacing-1">Standard Item</label>
+                        <select class="form-select py-3 fw-bold text-dark" id="product_name" name="product_name" required>
                             <option value="" disabled selected>Select Item Type</option>
                             <option value="Paneer">Paneer (Hand-Pressed)</option>
                             <option value="Butter">Fresh Farm Butter</option>
@@ -45,29 +164,21 @@
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label for="quantity"
-                            class="form-label text-uppercase small fw-bold text-muted letter-spacing-1">Lot
-                            Quantity</label>
+                        <label for="quantity" class="form-label text-uppercase x-small fw-bold text-muted letter-spacing-1">Lot Quantity</label>
                         <div class="input-group">
-                            <input type="number" class="form-control bg-light border-0 py-3 fw-bold" id="quantity"
-                                name="quantity" step="0.1" min="0.1" placeholder="0.0" required>
-                            <span class="input-group-text bg-light border-0 small text-muted">kg/L</span>
+                            <input type="number" class="form-control py-3 fw-bold" id="quantity" name="quantity" step="0.1" min="0.1" placeholder="0.0" required>
+                            <span class="input-group-text bg-white border-0 fw-bold text-muted" style="border-radius: 0 50px 50px 0; border: 1.5px solid rgba(74, 59, 50, 0.1); border-left: 0;">kg/L</span>
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <label for="price"
-                            class="form-label text-uppercase small fw-bold text-muted letter-spacing-1">Pricing
-                            (Rs/unit)</label>
+                        <label for="price" class="form-label text-uppercase x-small fw-bold text-muted letter-spacing-1">Pricing (Rs/unit)</label>
                         <div class="input-group">
-                            <span class="input-group-text bg-light border-0 small text-muted">Rs.</span>
-                            <input type="number" class="form-control bg-light border-0 py-3 fw-bold" id="price"
-                                name="price" step="1" min="1" placeholder="0" required>
+                            <span class="input-group-text bg-white border-0 fw-bold text-muted" style="border-radius: 50px 0 0 50px; border: 1.5px solid rgba(74, 59, 50, 0.1); border-right: 0;">Rs.</span>
+                            <input type="number" class="form-control py-3 fw-bold" id="price" name="price" step="1" min="1" placeholder="0" required style="border-radius: 0 50px 50px 0 !important;">
                         </div>
                     </div>
                     <div class="col-md-2">
-                        <button type="submit"
-                            class="btn btn-primary btn-lg w-100 rounded-pill py-3 fw-bold shadow-premium">Release
-                            Batch</button>
+                        <button type="submit" class="btn-farm btn-farm-primary w-100 py-3">Release Batch</button>
                     </div>
                 </div>
             </form>
@@ -75,59 +186,55 @@
     </div>
     {% endif %}
 
-    <!-- Products Grid -->
     <div class="animate-fade" style="animation-delay: 0.1s;">
         <div class="d-flex justify-content-between align-items-end mb-4">
-            <h4 class="fw-bold mb-0">Active Product Listings</h4>
-            <span class="text-muted small fw-bold text-uppercase letter-spacing-1">Marketplace Live</span>
+            <h4 class="fw-bold mb-0 text-dark">Active Product Listings</h4>
+            <span class="badge bg-farm-soft rounded-pill px-3 py-2 x-small fw-bold text-uppercase border">Marketplace Live</span>
         </div>
 
         {% if products %}
         <div class="row g-4">
             {% for product in products %}
             <div class="col-md-4 col-lg-3">
-                <div class="card h-100 border-0 shadow-premium transition-all hover-up overflow-hidden"
-                    style="border-radius: 20px;">
-                    <div class="p-0 bg-light text-center border-bottom border-white overflow-hidden"
-                        style="height: 180px;">
-                        <img src="{% if product['product_name']|lower == 'paneer' %}{{ url_for('static', filename='paneer.png') }}
-                                  {% elif product['product_name']|lower == 'butter' %}{{ url_for('static', filename='butter.png') }}
-                                  {% elif product['product_name']|lower == 'ghee' %}{{ url_for('static', filename='ghee.png') }}
-                                  {% elif product['product_name']|lower == 'curd' %}{{ url_for('static', filename='curd.png') }}
-                                  {% else %}{{ url_for('static', filename='generic_dairy.png') }}{% endif %}"
-                            alt="{{ product['product_name'] }}" class="h-100 w-100 object-fit-cover shadow-sm">
+                <div class="premium-card h-100">
+                    <div class="p-0 bg-light text-center border-bottom overflow-hidden" style="height: 180px;">
+                        <img src="{% if product['product_name']|lower == 'paneer' %}https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?auto=format&fit=crop&w=400
+                                  {% elif product['product_name']|lower == 'butter' %}https://images.unsplash.com/photo-1589134712652-3023e13d964f?auto=format&fit=crop&w=400
+                                  {% elif product['product_name']|lower == 'ghee' %}https://images.unsplash.com/photo-1614083049102-7164eb374775?auto=format&fit=crop&w=400
+                                  {% elif product['product_name']|lower == 'curd' %}https://images.unsplash.com/photo-1485962398705-ef6a13c41e8f?auto=format&fit=crop&w=400
+                                  {% else %}https://images.unsplash.com/photo-1628088062854-d1870b4553da?auto=format&fit=crop&w=400{% endif %}"
+                            alt="{{ product['product_name'] }}" class="h-100 w-100 object-fit-cover">
                     </div>
 
                     <div class="card-body p-4">
                         <h6 class="fw-bold text-dark mb-1 text-capitalize">{{ product['product_name'] }}</h6>
                         {% if role == 'consumer' %}
-                        <p class="x-small text-muted mb-3">{{ product['farm_name'] }}</p>
+                        <p class="x-small text-muted mb-3 d-flex align-items-center gap-1">
+                            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path></svg>
+                            {{ product['farm_name'] }}
+                        </p>
                         {% endif %}
 
                         <div class="vstack gap-2 mb-4">
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="text-muted small">Available</span>
-                                <span class="fw-bold text-dark">{{ product['quantity'] }} Units</span>
+                                <span class="fw-bold text-dark">{{ product['quantity'] }} <span class="x-small">Units</span></span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="text-muted small">Price Unit</span>
-                                <span class="fw-bold text-primary">Rs. {{ product['price'] }}</span>
+                                <span class="fw-bold text-farm">Rs. {{ product['price'] }}</span>
                             </div>
                         </div>
 
                         {% if role == 'farmer' %}
                         <form method="POST" action="{{ url_for('delete_product', product_id=product['product_id']) }}">
-                            <button type="submit"
-                                class="btn btn-outline-danger btn-sm w-100 rounded-pill fw-bold border-2">Discontinue
-                                Item</button>
+                            <button type="submit" class="btn-farm btn-farm-outline-danger w-100">Discontinue Item</button>
                         </form>
                         {% else %}
                         <form method="POST" action="{{ url_for('buy_product', product_id=product['product_id']) }}">
-                            <div class="input-group input-group-sm mb-0">
-                                <input type="number" class="form-control bg-light border-0 py-2" name="quantity"
-                                    min="0.1" max="{{ product['quantity'] }}" step="0.1" placeholder="Qty" required>
-                                <button type="submit"
-                                    class="btn btn-primary px-3 fw-bold rounded-pill-end shadow-sm">Purchase</button>
+                            <div class="input-group purchase-group">
+                                <input type="number" class="form-control" name="quantity" min="0.1" max="{{ product['quantity'] }}" step="0.1" placeholder="Qty" required>
+                                <button type="submit" class="btn btn-farm-primary px-3 shadow-none">Buy</button>
                             </div>
                         </form>
                         {% endif %}
@@ -137,40 +244,24 @@
             {% endfor %}
         </div>
         {% else %}
-        <div class="card border-0 shadow-premium p-5 text-center" style="border-radius: 24px;">
-            <div class="mb-4 text-muted opacity-25">
-                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                    stroke-linecap="round" stroke-linejoin="round">
+        <div class="premium-card p-5 text-center">
+            <div class="mb-4 rounded-circle mx-auto d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background-color: var(--pasture-light); color: var(--pasture-green);">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
                     <path d="M3 6h18"></path>
                     <path d="M16 10a4 4 0 0 1-8 0"></path>
                 </svg>
             </div>
-            <h5 class="fw-bold">Inventory Empty</h5>
-            <p class="text-muted mx-auto" style="max-width: 350px;">{% if role == 'farmer' %}No products listed. Convert
-                your surplus milk into high-demand dairy items today.{% else %}No value-added products are currently
-                available in your region.{% endif %}</p>
+            <h5 class="fw-bold text-dark">Inventory Empty</h5>
+            <p class="text-muted mx-auto mb-0" style="max-width: 400px;">
+                {% if role == 'farmer' %}
+                    No products listed. Convert your surplus milk into high-demand dairy items like Paneer or Ghee today.
+                {% else %}
+                    No value-added artisanal products are currently available in your region. Check back later!
+                {% endif %}
+            </p>
         </div>
         {% endif %}
     </div>
 </div>
-
-<style>
-    .letter-spacing-1 {
-        letter-spacing: 0.1em;
-    }
-
-    .x-small {
-        font-size: 0.75rem;
-    }
-
-    .rounded-pill-end {
-        border-radius: 0 50rem 50rem 0 !important;
-    }
-
-    .input-group>.form-control:first-child {
-        border-radius: 50rem 0 0 50rem !important;
-        padding-left: 1.25rem;
-    }
-</style>
 {% endblock %}

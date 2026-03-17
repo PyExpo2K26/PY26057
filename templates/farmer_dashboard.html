@@ -2,29 +2,167 @@
 {% block title %}Farmer Dashboard - FarmIO{% endblock %}
 
 {% block content %}
-<!-- Header Section -->
-<div class="page-header border-0 pb-0 mb-5 overflow-hidden position-relative"
-    style="background: linear-gradient(to right, #ffffff, var(--p-50));">
+<style>
+    /* 1. Premium B2C Milk Theme Variables */
+    :root {
+        --milk-cream: #FFFAF0;
+        --milk-white: #FFFFFF;
+        --pasture-green: #2E7D32;
+        --pasture-light: #E8F5E9;
+        --pasture-dark: #1b5e20;
+        --earth-brown: #4A3B32;
+        --earth-dark: #2D241E;
+        --sunset-orange: #F57C00;
+        --sunset-light: #FFF3E0;
+    }
+
+    /* 2. Smooth Scroller Effect */
+    html { scroll-behavior: smooth; }
+
+    body {
+        background-color: var(--milk-cream);
+        font-family: 'Inter', sans-serif;
+        color: var(--earth-brown);
+    }
+
+    /* 3. Modern Card Format */
+    .premium-card {
+        background: var(--milk-white);
+        border-radius: 28px;
+        box-shadow: 0 20px 40px -10px rgba(46, 125, 50, 0.08);
+        border: 1px solid rgba(46, 125, 50, 0.05);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .premium-card:hover {
+        box-shadow: 0 25px 50px -12px rgba(46, 125, 50, 0.12);
+        transform: translateY(-5px);
+    }
+
+    /* 4. Proper Button Radius (Pill Shape) */
+    .btn-farm {
+        border-radius: 50px !important;
+        padding: 14px 28px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        letter-spacing: 0.5px;
+        border: none;
+    }
+
+    .btn-farm-primary {
+        background-color: var(--pasture-green);
+        color: var(--milk-white);
+        box-shadow: 0 8px 20px rgba(46, 125, 50, 0.2);
+    }
+    
+    .btn-farm-primary:hover {
+        background-color: var(--pasture-dark);
+        color: var(--milk-white);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 25px rgba(46, 125, 50, 0.3);
+    }
+
+    .btn-farm-outline {
+        background-color: var(--milk-white);
+        color: var(--pasture-green);
+        border: 2px solid var(--pasture-green);
+    }
+
+    .btn-farm-outline:hover {
+        background-color: var(--pasture-green);
+        color: var(--milk-white);
+    }
+    
+    .btn-farm-outline-danger {
+        background-color: var(--milk-white);
+        color: #dc3545;
+        border: 2px solid #dc3545;
+    }
+    
+    .btn-farm-outline-danger:hover {
+        background-color: #dc3545;
+        color: var(--milk-white);
+    }
+
+    /* Purity Banner */
+    .purity-banner {
+        background: linear-gradient(135deg, var(--pasture-green) 0%, var(--earth-dark) 100%);
+        border-radius: 32px;
+        position: relative;
+        overflow: hidden;
+        color: white;
+    }
+
+    .purity-banner img {
+        position: absolute;
+        right: 0; top: 0;
+        height: 100%; width: 50%;
+        object-fit: cover;
+        mask-image: linear-gradient(to left, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%);
+        -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%);
+        opacity: 0.85;
+    }
+
+    /* Gesture Instruction Cards */
+    .instruction-card {
+        background: var(--milk-white);
+        border-radius: 20px;
+        padding: 1.5rem;
+        border: 1px dashed rgba(46, 125, 50, 0.2);
+        height: 100%;
+    }
+
+    /* Table Styling */
+    .table thead th {
+        background-color: rgba(46, 125, 50, 0.05);
+        color: var(--pasture-green);
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-bottom: 2px solid rgba(46, 125, 50, 0.1);
+        padding: 1rem;
+    }
+
+    .table td {
+        padding: 1.25rem 1rem;
+        vertical-align: middle;
+        border-bottom: 1px solid rgba(74, 59, 50, 0.05);
+    }
+
+    /* Utilities */
+    .bg-farm-soft { background-color: var(--pasture-light); color: var(--pasture-green); }
+    .bg-sunset-soft { background-color: var(--sunset-light); color: var(--sunset-orange); }
+    .text-farm { color: var(--pasture-green) !important; }
+    .text-sunset { color: var(--sunset-orange) !important; }
+    .letter-spacing-1 { letter-spacing: 0.08em; }
+    .x-small { font-size: 0.75rem; }
+</style>
+
+<div class="page-header border-0 pb-0 mb-4 overflow-hidden position-relative" style="background: linear-gradient(to bottom, var(--milk-white), var(--milk-cream));">
     <div class="container animate-fade py-5">
         <div class="row align-items-center">
             <div class="col-lg-7">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-3 small text-uppercase fw-bold letter-spacing-1">
-                        <li class="breadcrumb-item"><a href="{{ url_for('index') }}"
-                                class="text-muted text-decoration-none">Home</a></li>
-                        <li class="breadcrumb-item active text-primary" aria-current="page">Farmer Portal</li>
+                        <li class="breadcrumb-item"><a href="{{ url_for('index') }}" class="text-decoration-none" style="color: var(--earth-brown); opacity: 0.7;">Home</a></li>
+                        <li class="breadcrumb-item active text-farm" aria-current="page">Farmer Portal</li>
                     </ol>
                 </nav>
-                <h1 class="mb-2 fw-bold display-5">Dashboard Overview</h1>
-                <p class="text-muted mb-0 lead-sm">
-                    Management console for <span class="text-dark fw-bold border-bottom border-primary border-2">{{
-                        farmer['farm_name'] }}</span>
-                </p>
+                
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="FarmIO Logo" height="50" style="object-fit: contain;" onerror="this.style.display='none'">
+                    <h1 class="mb-0 fw-bold display-5 text-dark">Dashboard Overview</h1>
+                </div>
             </div>
             <div class="col-lg-5 text-lg-end mt-4 mt-lg-0">
-                <a href="{{ url_for('add_milk') }}"
-                    class="btn btn-primary rounded-pill px-5 py-3 fw-bold shadow-premium border-0 transition-all hover-up">
-                    <span class="me-2">+</span> List New Batch
+                <a href="{{ url_for('add_milk') }}" class="btn-farm btn-farm-primary shadow-lg">
+                    <span class="me-2 fs-5 lh-1">+</span> List New Batch
                 </a>
             </div>
         </div>
@@ -32,117 +170,150 @@
 </div>
 
 <div class="container pb-5">
-    <!-- Bento Metric Grid -->
-    <div class="row g-4 mb-5 animate-fade" style="animation-delay: 0.1s;">
-        <div class="col-lg-3 col-md-6">
-            <div class="card border-0 shadow-premium h-100 transition-all hover-up" style="border-radius: 24px;">
-                <div class="card-body p-4 text-center text-md-start">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div class="bg-primary-soft text-primary p-3 rounded-2xl d-flex align-items-center justify-content-center"
-                            style="width: 52px; height: 52px;">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="m21 8-9-5-9 5v8l9 5 9-5V8z"></path>
-                                <path d="M3 8l9 5 9-5"></path>
-                                <path d="M12 22V13"></path>
-                            </svg>
-                        </div>
-                        <span class="x-small fw-bold text-muted text-uppercase letter-spacing-1">Supply</span>
-                    </div>
-                    <h3 class="fw-bold mb-1 text-dark">{{ total_listed }}<small class="text-muted ms-1 h6">L</small>
-                    </h3>
-                    <p class="text-muted x-small mb-0 fw-medium">Total Volume Listed</p>
+    
+    <div class="row g-4 mb-5 animate-fade">
+        <div class="col-12">
+            <div class="purity-banner p-4 p-md-5 d-flex align-items-center shadow-lg">
+                <img src="https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=1200" alt="Pure raw milk">
+                <div class="position-relative z-1" style="max-width: 600px;">
+                    <span class="badge rounded-pill px-3 py-2 fw-bold text-uppercase mb-3" style="background-color: var(--sunset-light); color: var(--sunset-orange); letter-spacing: 1px;">Quality Commitment</span>
+                    <h2 class="display-6 fw-bold mb-2">100% Farm-to-Glass Purity</h2>
+                    <p class="lead mb-0 opacity-90" style="font-size: 1.1rem;">Welcome back, <strong class="text-white border-bottom">{{ farmer['farm_name'] }}</strong>. Your commitment to supplying untouched, unadulterated milk is what drives our marketplace.</p>
                 </div>
             </div>
         </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="card border-0 shadow-premium h-100 transition-all hover-up" style="border-radius: 24px;">
-                <div class="card-body p-4 text-center text-md-start">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div class="bg-success-soft text-success p-3 rounded-2xl d-flex align-items-center justify-content-center"
-                            style="width: 52px; height: 52px;">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="12" y1="1" x2="12" y2="23"></line>
-                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                            </svg>
-                        </div>
-                        <span class="x-small fw-bold text-muted text-uppercase letter-spacing-1">Orders</span>
-                    </div>
-                    <h3 class="fw-bold mb-1 text-dark text-success">{{ total_ordered }}<small
-                            class="text-muted ms-1 h6">L</small>
-                    </h3>
-                    <p class="text-muted x-small mb-0 fw-medium">Volume Fulfilled</p>
+
+        <div class="col-md-4">
+            <div class="instruction-card d-flex align-items-start gap-3">
+                <div class="bg-farm-soft p-3 rounded-circle text-farm">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                </div>
+                <div>
+                    <h6 class="fw-bold text-dark mb-1">1. Tap to List</h6>
+                    <p class="x-small mb-0" style="color: var(--earth-brown);">Use the <strong>+ List New Batch</strong> button daily to broadcast your fresh morning or evening yield.</p>
                 </div>
             </div>
         </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="card border-0 shadow-premium h-100 transition-all hover-up" style="border-radius: 24px;">
-                <div class="card-body p-4 text-center text-md-start">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div class="bg-warning-soft text-warning p-3 rounded-2xl d-flex align-items-center justify-content-center"
-                            style="width: 52px; height: 52px;">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 10V4a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6h18Z"></path>
-                                <path d="M3 10v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V10"></path>
-                            </svg>
-                        </div>
-                        <span class="x-small fw-bold text-muted text-uppercase letter-spacing-1">Inventory</span>
-                    </div>
-                    <h3 class="fw-bold mb-1 text-dark">{{ remaining }}<small class="text-muted ms-1 h6">L</small></h3>
-                    <p class="text-muted x-small mb-0 fw-medium">Currently Available</p>
+        <div class="col-md-4">
+            <div class="instruction-card d-flex align-items-start gap-3">
+                <div class="bg-sunset-soft p-3 rounded-circle text-sunset">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9c1.66 0 3-4.03 3-9s-1.34-9-3-9m0 18c-1.66 0-3-4.03-3-9s1.34-9 3-9m-9 9a9 9 0 0 1 9-9"></path></svg>
+                </div>
+                <div>
+                    <h6 class="fw-bold text-dark mb-1">2. Track Orders</h6>
+                    <p class="x-small mb-0" style="color: var(--earth-brown);">Monitor consumer subscriptions and instant orders mapped directly to your active inventory.</p>
                 </div>
             </div>
         </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="card border-0 shadow-premium h-100 transition-all hover-up"
-                style="border-radius: 24px; background: linear-gradient(135deg, var(--p-600) 0%, var(--p-900) 100%); color: white;">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div class="bg-white text-primary p-3 rounded-2xl shadow-sm d-flex align-items-center justify-content-center"
-                            style="width: 50px; height: 50px;">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
-                                <path d="M3 6h18"></path>
-                                <path d="M16 10a4 4 0 0 1-8 0"></path>
-                            </svg>
-                        </div>
-                        <span
-                            class="x-small fw-bold text-white opacity-50 text-uppercase letter-spacing-1">Active</span>
-                    </div>
-                    <h1 class="fw-bold mb-1 text-white">{{ today_orders|length }}</h1>
-                    <p class="text-white opacity-75 x-small mb-0 fw-medium">Open Fulfillment Tickets</p>
+        <div class="col-md-4">
+            <div class="instruction-card d-flex align-items-start gap-3">
+                <div class="p-3 rounded-circle" style="background-color: #FEE2E2; color: #DC2626;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                </div>
+                <div>
+                    <h6 class="fw-bold text-dark mb-1">3. Fulfill & Dispatch</h6>
+                    <p class="x-small mb-0" style="color: var(--earth-brown);">Prepare the batches securely. Delivery partners will arrive during your specified supply window.</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Main Content Area -->
+    <div class="row g-4 mb-5 animate-fade" style="animation-delay: 0.1s;">
+        <div class="col-lg-3 col-md-6">
+            <div class="premium-card h-100" style="border-radius: 24px;">
+                <div class="card-body p-4 text-center text-md-start">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="bg-farm-soft p-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m21 8-9-5-9 5v8l9 5 9-5V8z"></path>
+                                <path d="M3 8l9 5 9-5"></path>
+                                <path d="M12 22V13"></path>
+                            </svg>
+                        </div>
+                        <span class="x-small fw-bold text-uppercase letter-spacing-1" style="color: var(--earth-brown); opacity: 0.7;">Supply</span>
+                    </div>
+                    <h3 class="fw-bold mb-1 text-dark">{{ total_listed }}<small class="ms-1 h6" style="color: var(--earth-brown);">L</small></h3>
+                    <p class="x-small mb-0 fw-medium" style="color: var(--earth-brown);">Total Volume Listed</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6">
+            <div class="premium-card h-100" style="border-radius: 24px;">
+                <div class="card-body p-4 text-center text-md-start">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="bg-sunset-soft p-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="1" x2="12" y2="23"></line>
+                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                            </svg>
+                        </div>
+                        <span class="x-small fw-bold text-uppercase letter-spacing-1" style="color: var(--earth-brown); opacity: 0.7;">Orders</span>
+                    </div>
+                    <h3 class="fw-bold mb-1 text-sunset">{{ total_ordered }}<small class="ms-1 h6" style="color: var(--earth-brown);">L</small></h3>
+                    <p class="x-small mb-0 fw-medium" style="color: var(--earth-brown);">Volume Fulfilled</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6">
+            <div class="premium-card h-100" style="border-radius: 24px;">
+                <div class="card-body p-4 text-center text-md-start">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="p-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; background-color: #FEF3C7; color: #D97706;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 10V4a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6h18Z"></path>
+                                <path d="M3 10v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V10"></path>
+                            </svg>
+                        </div>
+                        <span class="x-small fw-bold text-uppercase letter-spacing-1" style="color: var(--earth-brown); opacity: 0.7;">Inventory</span>
+                    </div>
+                    <h3 class="fw-bold mb-1 text-dark">{{ remaining }}<small class="ms-1 h6" style="color: var(--earth-brown);">L</small></h3>
+                    <p class="x-small mb-0 fw-medium" style="color: var(--earth-brown);">Currently Available</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6">
+            <div class="premium-card h-100" style="border-radius: 24px; background: linear-gradient(135deg, var(--pasture-green) 0%, var(--pasture-dark) 100%); color: white; border: none;">
+                <div class="card-body p-4 text-center text-md-start">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="bg-white text-farm p-3 rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
+                                <path d="M3 6h18"></path>
+                                <path d="M16 10a4 4 0 0 1-8 0"></path>
+                            </svg>
+                        </div>
+                        <span class="x-small fw-bold text-white opacity-75 text-uppercase letter-spacing-1">Active</span>
+                    </div>
+                    <h1 class="fw-bold mb-1 text-white">{{ today_orders|length }}</h1>
+                    <p class="text-white opacity-90 x-small mb-0 fw-medium">Open Fulfillment Tickets</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row g-5">
         <div class="col-lg-8">
-            <!-- Active Management -->
-            <div class="card border-0 shadow-premium mb-5 overflow-hidden animate-fade"
-                style="animation-delay:0.2s; border-radius: 28px;">
+            <div class="premium-card mb-5 animate-fade" style="animation-delay:0.2s;">
                 <div class="card-header bg-white border-bottom p-4 d-flex justify-content-between align-items-center">
                     <div>
-                        <h5 class="mb-0 fw-bold">Daily Milk Inventory</h5>
-                        <p class="text-muted x-small mb-0">Live status for {{ today }}</p>
+                        <h5 class="mb-0 fw-bold text-dark">Daily Milk Inventory</h5>
+                        <p class="x-small mb-0" style="color: var(--earth-brown);">Live status for {{ today }}</p>
                     </div>
-                    <a href="{{ url_for('add_milk') }}"
-                        class="text-primary x-small fw-bold text-uppercase text-decoration-none">+ New Listing</a>
+                    <a href="{{ url_for('add_milk') }}" class="text-farm x-small fw-bold text-uppercase text-decoration-none">+ New Listing</a>
                 </div>
                 <div class="card-body p-0">
                     {% if today_listings %}
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0 align-middle">
-                            <thead class="bg-light bg-opacity-50">
+                        <table class="table table-hover mb-0 align-middle border-0">
+                            <thead>
                                 <tr>
-                                    <th class="ps-4 text-uppercase x-small fw-bold text-muted">Supply Volume</th>
-                                    <th class="text-uppercase x-small fw-bold text-muted">Pricing</th>
-                                    <th class="text-uppercase x-small fw-bold text-muted">Condition</th>
-                                    <th class="text-end pe-4 text-uppercase x-small fw-bold text-muted">Action</th>
+                                    <th class="ps-4">Supply Volume</th>
+                                    <th>Pricing</th>
+                                    <th>Condition</th>
+                                    <th class="text-end pe-4">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -150,37 +321,28 @@
                                 <tr>
                                     <td class="ps-4 py-4">
                                         <div class="d-flex align-items-center gap-3">
-                                            <div class="bg-primary-soft text-primary p-2 rounded-xl"
-                                                style="width: 48px; height: 48px; border: 1px solid var(--p-100);">
-                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                    stroke-linejoin="round">
-                                                    <path
-                                                        d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                                            <div class="bg-farm-soft p-2 rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                                                 </svg>
                                             </div>
                                             <div>
-                                                <div class="fw-bold text-dark">{{ listing['total_quantity'] }} Litres
-                                                </div>
-                                                <div class="text-muted x-small">Fulfillment: {{
-                                                    listing['collection_time'] or 'Immediate' }}</div>
+                                                <div class="fw-bold text-dark">{{ listing['total_quantity'] }} Litres</div>
+                                                <div class="x-small" style="color: var(--earth-brown);">Fulfillment: {{ listing['collection_time'] or 'Immediate' }}</div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="fw-bold text-dark">Rs. {{ listing['price_per_litre'] }}<small
-                                            class="text-muted fw-normal">/L</small></td>
+                                    <td class="fw-bold text-farm">Rs. {{ listing['price_per_litre'] }}<small class="fw-normal" style="color: var(--earth-brown);">/L</small></td>
                                     <td>
                                         {% if listing['is_closed'] %}
-                                        <span class="badge-status cancelled">Closed</span>
+                                        <span class="badge rounded-pill bg-secondary px-3 py-2 fw-medium">Closed</span>
                                         {% else %}
-                                        <span class="badge-status active">Live</span>
+                                        <span class="badge rounded-pill px-3 py-2 fw-medium text-white" style="background-color: var(--pasture-green);">Live</span>
                                         {% endif %}
                                     </td>
                                     <td class="text-end pe-4">
-                                        <form method="POST"
-                                            action="{{ url_for('toggle_listing', listing_id=listing['listing_id']) }}">
-                                            <button type="submit"
-                                                class="btn {% if listing['is_closed'] %}btn-outline-primary{% else %}btn-outline-danger{% endif %} btn-sm rounded-pill px-4 fw-bold">
+                                        <form method="POST" action="{{ url_for('toggle_listing', listing_id=listing['listing_id']) }}">
+                                            <button type="submit" class="btn-farm {% if listing['is_closed'] %}btn-farm-outline{% else %}btn-farm-outline-danger{% endif %}" style="padding: 8px 20px; font-size: 0.8rem;">
                                                 {% if listing['is_closed'] %}Re-Open{% else %}Close Early{% endif %}
                                             </button>
                                         </form>
@@ -191,54 +353,57 @@
                         </table>
                     </div>
                     {% else %}
-                    <div class="p-5 text-center bg-light bg-opacity-25 mt-2">
-                        <div class="mb-4 text-muted opacity-25">
-                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
-                                <path d="m9 12 2 2 4-4" />
-                            </svg>
+                    <div class="p-5 text-center" style="background-color: #FAFAFA;">
+                        <div class="mb-4 d-flex justify-content-center">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 64px; height: 64px; background-color: var(--pasture-light); color: var(--pasture-green);">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
+                                    <path d="m9 12 2 2 4-4" />
+                                </svg>
+                            </div>
                         </div>
-                        <h6 class="fw-bold">No active listings</h6>
-                        <p class="text-muted small mx-auto mb-4" style="max-width:300px;">Begin daily operations by
-                            listing your morning or evening milk batch.</p>
-                        <a href="{{ url_for('add_milk') }}"
-                            class="btn btn-primary rounded-pill px-5 py-2 fw-bold">Initialize Inventory</a>
+                        <h6 class="fw-bold text-dark">No active listings</h6>
+                        <p class="small mx-auto mb-4" style="color: var(--earth-brown); max-width:300px;">Begin daily operations by listing your morning or evening milk batch.</p>
+                        <a href="{{ url_for('add_milk') }}" class="btn-farm btn-farm-primary">Initialize Inventory</a>
                     </div>
                     {% endif %}
                 </div>
             </div>
 
-            <!-- Recent Transactions -->
-            <div class="card border-0 shadow-premium animate-fade" style="animation-delay:0.3s; border-radius: 28px;">
+            <div class="premium-card animate-fade" style="animation-delay:0.3s;">
                 <div class="card-header bg-white border-bottom p-4 d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 fw-bold">Recent Fulfillment Stream</h5>
-                    <a href="{{ url_for('farmer_orders') }}"
-                        class="x-small fw-bold text-primary text-decoration-none">Full Ledger →</a>
+                    <h5 class="mb-0 fw-bold text-dark">Recent Fulfillment Stream</h5>
+                    <a href="{{ url_for('farmer_orders') }}" class="x-small fw-bold text-farm text-decoration-none">Full Ledger →</a>
                 </div>
                 <div class="card-body p-0">
                     {% if all_orders %}
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0 align-middle">
-                            <thead class="bg-light bg-opacity-50">
+                        <table class="table table-hover mb-0 align-middle border-0">
+                            <thead>
                                 <tr>
-                                    <th class="ps-4 text-uppercase x-small fw-bold text-muted">Transaction ID</th>
-                                    <th class="text-uppercase x-small fw-bold text-muted">Consumer Partner</th>
-                                    <th class="text-uppercase x-small fw-bold text-muted">Volume</th>
-                                    <th class="text-end pe-4 text-uppercase x-small fw-bold text-muted">Status</th>
+                                    <th class="ps-4">Transaction ID</th>
+                                    <th>Consumer Partner</th>
+                                    <th>Volume</th>
+                                    <th class="text-end pe-4">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for order in all_orders %}
-                                <tr class="border-bottom-0">
+                                <tr>
                                     <td class="ps-4 py-4">
                                         <div class="fw-bold text-dark">#{{ order['order_id'] }}</div>
-                                        <div class="text-muted x-small">{{ order['order_date'] }}</div>
+                                        <div class="x-small" style="color: var(--earth-brown);">{{ order['order_date'] }}</div>
                                     </td>
                                     <td class="fw-bold text-dark">{{ order['consumer_name'] }}</td>
-                                    <td class="fw-medium">{{ order['quantity'] }} Litres</td>
+                                    <td class="fw-medium text-dark">{{ order['quantity'] }} Litres</td>
                                     <td class="text-end pe-4">
-                                        <span class="badge-status {{ order['status'] }}">{{ order['status'] }}</span>
+                                        {% if order['status']|lower == 'delivered' or order['status']|lower == 'completed' %}
+                                            <span class="badge rounded-pill px-3 py-2 fw-medium text-white" style="background-color: var(--pasture-green);">{{ order['status']|capitalize }}</span>
+                                        {% elif order['status']|lower == 'pending' or order['status']|lower == 'processing' %}
+                                            <span class="badge rounded-pill px-3 py-2 fw-medium text-white" style="background-color: var(--sunset-orange);">{{ order['status']|capitalize }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary rounded-pill px-3 py-2 fw-medium">{{ order['status']|capitalize }}</span>
+                                        {% endif %}
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -246,30 +411,26 @@
                         </table>
                     </div>
                     {% else %}
-                    <div class="p-5 text-center text-muted small bg-light bg-opacity-25 mt-2">Waiting for first consumer
-                        connection today...</div>
+                    <div class="p-5 text-center small" style="color: var(--earth-brown); background-color: #FAFAFA;">
+                        Waiting for first consumer connection today...
+                    </div>
                     {% endif %}
                 </div>
             </div>
         </div>
 
         <div class="col-lg-4">
-            <!-- Strategic Navigation -->
-            <div class="card border-0 shadow-premium mb-5 overflow-hidden animate-fade"
-                style="animation-delay:0.4s; border-radius: 28px;">
+            <div class="premium-card mb-5 animate-fade" style="animation-delay:0.4s;">
                 <div class="card-header bg-white border-bottom p-4">
-                    <h6 class="mb-0 fw-bold text-uppercase small text-muted letter-spacing-1">Operations Matrix</h6>
+                    <h6 class="mb-0 fw-bold text-uppercase small letter-spacing-1" style="color: var(--earth-dark);">Operations Matrix</h6>
                 </div>
                 <div class="card-body p-0">
                     <div class="list-group list-group-flush">
-                        <a href="{{ url_for('farmer_products') }}"
-                            class="list-group-item list-group-item-action p-4 border-0 transition-all">
+                        <a href="{{ url_for('farmer_products') }}" class="list-group-item list-group-item-action p-4 border-0 transition-all">
                             <div class="d-flex align-items-center justify-content-between">
                                 <div class="d-flex align-items-center gap-3">
-                                    <div class="bg-primary text-white p-2 rounded-xl">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round">
+                                    <div class="bg-farm-soft p-2 rounded-circle">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
                                             <path d="M3 6h18" />
                                             <path d="M16 10a4 4 0 0 1-8 0" />
@@ -277,111 +438,127 @@
                                     </div>
                                     <div>
                                         <div class="fw-bold text-dark">Value-Added Store</div>
-                                        <div class="text-muted x-small">Market dairy derivatives</div>
+                                        <div class="x-small" style="color: var(--earth-brown);">Market dairy derivatives</div>
                                     </div>
                                 </div>
-                                <span class="text-muted opacity-50">→</span>
+                                <span class="text-farm opacity-50">→</span>
                             </div>
                         </a>
-                        <a href="{{ url_for('farmer_subscriptions') }}"
-                            class="list-group-item list-group-item-action p-4 border-0 border-top transition-all">
+                        <a href="{{ url_for('farmer_subscriptions') }}" class="list-group-item list-group-item-action p-4 border-0 border-top transition-all">
                             <div class="d-flex align-items-center justify-content-between">
                                 <div class="d-flex align-items-center gap-3">
-                                    <div class="bg-primary text-white p-2 rounded-xl">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round">
+                                    <div class="bg-farm-soft p-2 rounded-circle">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                                         </svg>
                                     </div>
                                     <div>
                                         <div class="fw-bold text-dark">Active Subscriptions</div>
-                                        <div class="text-muted x-small">Manage continuity pipelines</div>
+                                        <div class="x-small" style="color: var(--earth-brown);">Manage continuity pipelines</div>
                                     </div>
                                 </div>
-                                <span class="text-muted opacity-50">→</span>
+                                <span class="text-farm opacity-50">→</span>
                             </div>
                         </a>
-                        <a href="{{ url_for('farmer_orders') }}"
-                            class="list-group-item list-group-item-action p-4 border-0 border-top transition-all">
+                        <a href="{{ url_for('farmer_orders') }}" class="list-group-item list-group-item-action p-4 border-0 border-top transition-all">
                             <div class="d-flex align-items-center justify-content-between">
                                 <div class="d-flex align-items-center gap-3">
-                                    <div class="bg-primary text-white p-2 rounded-xl">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round">
+                                    <div class="bg-farm-soft p-2 rounded-circle">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M3 3h18v18H3zM21 9H3M21 15H3M9 3v18M15 3v18" />
                                         </svg>
                                     </div>
                                     <div>
                                         <div class="fw-bold text-dark">Operation History</div>
-                                        <div class="text-muted x-small">Access full delivery archive</div>
+                                        <div class="x-small" style="color: var(--earth-brown);">Access full delivery archive</div>
                                     </div>
                                 </div>
-                                <span class="text-muted opacity-50">→</span>
+                                <span class="text-farm opacity-50">→</span>
                             </div>
                         </a>
                     </div>
                 </div>
             </div>
 
-            <!-- Value Added Products Summary -->
             {% if products %}
-            <div class="card border-0 shadow-premium overflow-hidden animate-fade"
-                style="animation-delay:0.5s; border-radius: 28px;">
+            <div class="premium-card animate-fade" style="animation-delay:0.5s;">
                 <div class="card-header bg-white border-bottom p-4">
-                    <h6 class="mb-0 fw-bold text-uppercase small text-muted letter-spacing-1">Marketplace Performance
-                    </h6>
+                    <h6 class="mb-0 fw-bold text-uppercase small letter-spacing-1" style="color: var(--earth-dark);">Marketplace Performance</h6>
                 </div>
                 <div class="card-body p-4">
                     <div class="vstack gap-3 mb-4">
                         {% for product in products[:3] %}
-                        <div
-                            class="d-flex align-items-center justify-content-between p-3 bg-light rounded-xl border border-white">
+                        <div class="d-flex align-items-center justify-content-between p-3 rounded-4" style="background-color: #FAFAFA; border: 1px solid rgba(0,0,0,0.05);">
                             <div class="d-flex align-items-center gap-2">
-                                <div class="bg-white rounded-circle" style="width: 6px; height: 6px;"></div>
+                                <div class="bg-white rounded-circle border shadow-sm" style="width: 8px; height: 8px;"></div>
                                 <div class="fw-bold text-dark x-small">{{ product['product_name'] }}</div>
                             </div>
-                            <div class="text-primary fw-bold x-small">Stock: {{ product['quantity'] }}</div>
+                            <div class="text-sunset fw-bold x-small">Stock: {{ product['quantity'] }}</div>
                         </div>
                         {% endfor %}
                     </div>
-                    <a href="{{ url_for('farmer_products') }}"
-                        class="btn btn-outline-primary btn-sm w-100 rounded-pill py-2 fw-bold">Manage Inventory</a>
+                    <a href="{{ url_for('farmer_products') }}" class="btn-farm btn-farm-outline w-100" style="padding: 10px 20px; font-size: 0.85rem;">Manage Inventory</a>
                 </div>
             </div>
             {% endif %}
         </div>
     </div>
+    
+    <!-- MY DELIVERIES SECTION (Corrected) -->
+    <div class="row mt-5 animate-fade" style="animation-delay: 0.6s;">
+        <div class="col-12">
+            <div class="premium-card">
+                <div class="card-header bg-white border-bottom p-4 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold text-dark">My Deliveries</h5>
+                    <span class="x-small fw-bold text-farm text-decoration-none">Live Tracking</span>
+                </div>
+                <div class="card-body p-0">
+                    {% if deliveries %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 align-middle border-0">
+                            <thead>
+                                <tr>
+                                    <th class="ps-4">Order ID</th>
+                                    <th>Buyer</th>
+                                    <th>Agent</th>
+                                    <th class="text-end pe-4">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for del in deliveries %}
+                                <tr>
+                                    <td class="ps-4 py-3 fw-bold text-dark">#{{ del['order_id'] }}</td>
+                                    <td class="fw-medium">{{ del['consumer_name'] }}</td>
+                                    <td>
+                                        {% if del['agent_name'] %}
+                                            <span class="badge rounded-pill bg-light text-dark border">{{ del['agent_name'] }}</span>
+                                        {% else %}
+                                            <span class="badge rounded-pill bg-warning text-dark">Pending Assignment</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <span class="badge rounded-pill 
+                                            {% if del['status'] == 'Delivered' %}bg-success
+                                            {% elif del['status'] == 'Picked Up' %}bg-primary
+                                            {% elif del['status'] == 'Accepted' %}bg-info
+                                            {% else %}bg-secondary{% endif %}">
+                                            {{ del['status'] }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="p-5 text-center small" style="color: var(--earth-brown); background-color: #FAFAFA;">
+                        No active delivery tasks found.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
-
-<style>
-    .bg-success-soft {
-        background: #d1fae5;
-    }
-
-    .bg-danger-soft {
-        background: #fee2e2;
-    }
-
-    .rounded-md {
-        border-radius: 12px;
-    }
-
-    .x-small {
-        font-size: 0.7rem;
-    }
-
-    .letter-spacing-1 {
-        letter-spacing: 0.05em;
-    }
-
-    .hover-up:hover {
-        transform: translateY(-5px);
-    }
-
-    .transition-all {
-        transition: all 0.3s ease;
-    }
-</style>
 {% endblock %}

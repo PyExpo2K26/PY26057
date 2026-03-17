@@ -2,112 +2,191 @@
 {% block title %}Edit Subscription - FarmIO{% endblock %}
 
 {% block content %}
-<!-- Header -->
-<div class="page-header border-0 pb-4">
+<style>
+    /* 1. Milk-Based Professional Theme Variables */
+    :root {
+        --milk-cream: #FFFAF0;
+        --milk-white: #FFFFFF;
+        --pasture-green: #2E7D32;
+        --pasture-light: #E8F5E9;
+        --pasture-dark: #1b5e20;
+        --earth-brown: #4A3B32;
+        --earth-dark: #2D241E;
+        --sunset-orange: #F57C00;
+    }
+
+    /* 2. Smooth Scroller Effect */
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        background-color: var(--milk-cream);
+        font-family: 'Inter', sans-serif;
+        color: var(--earth-brown);
+    }
+
+    /* 3. Modern Card & UI Format */
+    .premium-card {
+        background: var(--milk-white);
+        border-radius: 28px;
+        box-shadow: 0 20px 40px -10px rgba(46, 125, 50, 0.08);
+        border: 1px solid rgba(46, 125, 50, 0.05);
+        overflow: hidden;
+    }
+
+    .form-select {
+        border-radius: 14px;
+        border: 1.5px solid rgba(74, 59, 50, 0.1);
+        background-color: #FCFDFD;
+        color: var(--earth-dark);
+        transition: all 0.3s ease;
+        box-shadow: none;
+    }
+
+    .form-select:focus {
+        border-color: var(--pasture-green);
+        box-shadow: 0 0 0 4px var(--pasture-light);
+        background-color: var(--milk-white);
+    }
+
+    /* 4. Proper Button Radius (Pill Shape) */
+    .btn-farm {
+        border-radius: 50px !important;
+        padding: 16px 24px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        border: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(46, 125, 50, 0.25);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-farm-primary {
+        background-color: var(--pasture-green);
+        color: var(--milk-white);
+    }
+    
+    .btn-farm-primary:hover {
+        background-color: var(--pasture-dark);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 25px rgba(46, 125, 50, 0.35);
+        color: white;
+    }
+
+    .btn-farm-outline {
+        background-color: var(--milk-white);
+        color: var(--pasture-green);
+        border: 2px solid var(--pasture-light);
+        box-shadow: none;
+    }
+
+    .btn-farm-outline:hover {
+        background-color: var(--pasture-light);
+        border-color: var(--pasture-green);
+        color: var(--pasture-dark);
+    }
+
+    .bg-farm-soft {
+        background-color: var(--pasture-light);
+        border: 1px solid rgba(46, 125, 50, 0.1);
+    }
+
+    .text-farm { color: var(--pasture-green) !important; }
+    .letter-spacing-1 { letter-spacing: 0.08em; }
+    .x-small { font-size: 0.75rem; }
+</style>
+
+<div class="page-header border-0 pb-4 pt-5" style="background: linear-gradient(to bottom, var(--milk-white), var(--milk-cream));">
     <div class="container animate-fade">
         <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-2 small text-uppercase fw-bold letter-spacing-1">
-                <li class="breadcrumb-item"><a href="{{ url_for('consumer_subscriptions') }}"
-                        class="text-muted text-decoration-none">Subscriptions</a></li>
-                <li class="breadcrumb-item active text-primary" aria-current="page">Plan Adjustment</li>
+            <ol class="breadcrumb mb-3 small text-uppercase fw-bold letter-spacing-1">
+                <li class="breadcrumb-item">
+                    <a href="{{ url_for('consumer_subscriptions') }}" class="text-decoration-none" style="color: var(--earth-brown); opacity: 0.7;">Subscriptions</a>
+                </li>
+                <li class="breadcrumb-item active text-farm" aria-current="page">Plan Adjustment</li>
             </ol>
         </nav>
-        <h2 class="mb-1 fw-bold display-6">Adjust Your Agreement</h2>
-        <p class="text-muted mb-0 lead small">Reconfiguring tenure #{{ subscription['subscription_id'] }}</p>
+        
+        <div class="d-flex align-items-center gap-3 mb-2">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="FarmIO Logo" height="45" style="object-fit: contain;" onerror="this.style.display='none'">
+            <h2 class="mb-0 fw-bold display-6 text-dark">Adjust Your Agreement</h2>
+        </div>
+        <p class="mb-0 lead small" style="color: var(--earth-brown);">Reconfiguring active tenure #{{ subscription['subscription_id'] }}</p>
     </div>
 </div>
 
 <div class="container pb-5">
     <div class="row justify-content-center">
         <div class="col-lg-6 col-md-8">
-            <div class="card border-0 shadow-premium animate-fade" style="border-radius: 24px;">
+            <div class="premium-card animate-fade">
                 <div class="card-header bg-white border-bottom p-4">
-                    <h5 class="mb-0 fw-bold">Live Configuration</h5>
+                    <h5 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
+                        <svg width="22" height="22" fill="none" stroke="var(--pasture-green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                        Live Configuration
+                    </h5>
                 </div>
                 <div class="card-body p-4 p-md-5">
                     <form method="POST">
                         <div class="mb-4">
-                            <label for="quantity"
-                                class="form-label text-uppercase small fw-bold text-muted letter-spacing-1">Daily
-                                Allocation Volume</label>
-                            <select class="form-select bg-light border-0 py-3 fw-bold text-dark" id="quantity"
-                                name="quantity" required>
-                                <option value="0.5" {% if subscription['quantity']==0.5 %}selected{% endif %}>0.5 Litres
-                                    (Rs. 30/day)</option>
-                                <option value="1.0" {% if subscription['quantity']==1.0 %}selected{% endif %}>1.0 Litres
-                                    (Rs. 60/day)</option>
-                                <option value="1.5" {% if subscription['quantity']==1.5 %}selected{% endif %}>1.5 Litres
-                                    (Rs. 90/day)</option>
-                                <option value="2.0" {% if subscription['quantity']==2.0 %}selected{% endif %}>2.0 Litres
-                                    (Rs. 120/day)</option>
-                                <option value="2.5" {% if subscription['quantity']==2.5 %}selected{% endif %}>2.5 Litres
-                                    (Rs. 150/day)</option>
-                                <option value="3.0" {% if subscription['quantity']==3.0 %}selected{% endif %}>3.0 Litres
-                                    (Rs. 180/day)</option>
+                            <label for="quantity" class="form-label text-uppercase x-small fw-bold letter-spacing-1 opacity-75" style="color: var(--earth-dark);">
+                                Daily Allocation Volume
+                            </label>
+                            <select class="form-select py-3 fw-bold text-dark" id="quantity" name="quantity" required>
+                                <option value="0.5" {% if subscription['quantity']==0.5 %}selected{% endif %}>0.5 Litres (Rs. 30/day)</option>
+                                <option value="1.0" {% if subscription['quantity']==1.0 %}selected{% endif %}>1.0 Litres (Rs. 60/day)</option>
+                                <option value="1.5" {% if subscription['quantity']==1.5 %}selected{% endif %}>1.5 Litres (Rs. 90/day)</option>
+                                <option value="2.0" {% if subscription['quantity']==2.0 %}selected{% endif %}>2.0 Litres (Rs. 120/day)</option>
+                                <option value="2.5" {% if subscription['quantity']==2.5 %}selected{% endif %}>2.5 Litres (Rs. 150/day)</option>
+                                <option value="3.0" {% if subscription['quantity']==3.0 %}selected{% endif %}>3.0 Litres (Rs. 180/day)</option>
                             </select>
 
-                            <div
-                                class="mt-4 p-4 rounded-xl bg-primary-soft border border-white shadow-sm d-flex justify-content-between align-items-center">
-                                <span class="x-small fw-bold text-primary text-uppercase">Projected Value</span>
-                                <h4 id="priceDisplay" class="mb-0 fw-bold text-primary">Rs. {{
-                                    "%.2f"|format(subscription['total_amount']) }}</h4>
+                            <div class="mt-4 p-4 rounded-4 bg-farm-soft shadow-sm d-flex justify-content-between align-items-center">
+                                <span class="x-small fw-bold text-farm text-uppercase letter-spacing-1">Projected 21-Day Value</span>
+                                <h4 id="priceDisplay" class="mb-0 fw-bold text-farm transition-all">Rs. {{ "%.2f"|format(subscription['total_amount']) }}</h4>
                             </div>
                         </div>
 
                         <div class="mb-5">
-                            <label for="status"
-                                class="form-label text-uppercase small fw-bold text-muted letter-spacing-1">Strategic
-                                Status</label>
-                            <select class="form-select bg-light border-0 py-3 fw-bold text-dark" id="status"
-                                name="status" required>
-                                <option value="active" {% if subscription['status']=='active' %}selected{% endif %}>
-                                    Active & Fulfilling</option>
-                                <option value="paused" {% if subscription['status']=='paused' %}selected{% endif %}>
-                                    Paused (Temporary Hold)</option>
-                                <option value="cancelled" {% if subscription['status']=='cancelled' %}selected{% endif
-                                    %}>Terminate Contract</option>
+                            <label for="status" class="form-label text-uppercase x-small fw-bold letter-spacing-1 opacity-75" style="color: var(--earth-dark);">
+                                Strategic Status
+                            </label>
+                            <select class="form-select py-3 fw-bold text-dark" id="status" name="status" required>
+                                <option value="active" {% if subscription['status']=='active' %}selected{% endif %}>Active & Fulfilling</option>
+                                <option value="paused" {% if subscription['status']=='paused' %}selected{% endif %}>Paused (Temporary Hold)</option>
+                                <option value="cancelled" {% if subscription['status']=='cancelled' %}selected{% endif %}>Terminate Contract</option>
                             </select>
-                            <div class="x-small text-muted mt-2">Pausing maintains your reservation slot but halts daily
-                                delivery.</div>
+                            <div class="x-small mt-2" style="color: var(--earth-brown); opacity: 0.8;">
+                                Note: Pausing maintains your reservation slot but halts daily delivery until you reactivate it.
+                            </div>
                         </div>
 
                         <div class="d-grid gap-3">
-                            <button type="submit"
-                                class="btn btn-primary btn-lg rounded-pill py-3 fw-bold shadow-premium">Commit
-                                Changes</button>
-                            <a href="{{ url_for('consumer_subscriptions') }}"
-                                class="btn btn-light rounded-pill py-3 fw-bold text-muted border-0">Discard
-                                Modifications</a>
+                            <button type="submit" class="btn-farm btn-farm-primary text-uppercase">
+                                Commit Changes
+                            </button>
+                            <a href="{{ url_for('consumer_subscriptions') }}" class="btn-farm btn-farm-outline">
+                                Discard Modifications
+                            </a>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <div class="mt-4 p-4 bg-light rounded-xl border border-white text-center">
-                <span class="x-small text-muted">Active Window: <strong>{{ subscription['start_date'] }}</strong> to
-                    <strong>{{ subscription['end_date'] }}</strong></span>
+            <div class="mt-4 p-4 rounded-4 text-center" style="background-color: #FAFAFA; border: 1px solid rgba(74, 59, 50, 0.1);">
+                <span class="small" style="color: var(--earth-brown);">
+                    Active Window: <strong class="text-dark">{{ subscription['start_date'] }}</strong> to <strong class="text-dark">{{ subscription['end_date'] }}</strong>
+                </span>
             </div>
         </div>
     </div>
 </div>
-
-<style>
-    .letter-spacing-1 {
-        letter-spacing: 0.1em;
-    }
-
-    .x-small {
-        font-size: 0.75rem;
-    }
-
-    .bg-primary-soft {
-        background-color: var(--p-50);
-    }
-
-    .rounded-xl {
-        border-radius: 16px;
-    }
-</style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -118,7 +197,14 @@
             const qty = parseFloat(quantitySelect.value);
             const dailyPrice = (qty / 0.5) * 30;
             const total = dailyPrice * 21;
+            
             priceDisplay.textContent = `Rs. ${total.toFixed(2)}`;
+            
+            // Subtle visual pop animation for professional feel
+            priceDisplay.style.transform = 'scale(1.05)';
+            setTimeout(() => {
+                priceDisplay.style.transform = 'scale(1)';
+            }, 200);
         }
 
         quantitySelect.addEventListener('change', updatePrice);

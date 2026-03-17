@@ -2,75 +2,205 @@
 {% block title %}Login - FarmIO{% endblock %}
 
 {% block content %}
+<style>
+    /* 1. Theme Variables: Updated to Sandal Background & Green Text */
+    :root {
+        --milk-cream: #F4E8D1;      /* CHANGED: This is your Sandal Color */
+        --milk-white: #FFFFFF;
+        --pasture-green: #006400;    /* CHANGED: Dark Green for Text */
+        --pasture-light: #E8F5E9;
+        --pasture-dark: #004d00;     /* Darker Green for hover */
+        --earth-brown: #4A3B32;
+        --earth-dark: #2D241E;
+        --sunset-orange: #F57C00;
+    }
+
+    /* 2. Smooth Scroller Effect */
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        background-color: var(--milk-cream); /* Sandal Background applied */
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* 3. Modern Auth Card Format */
+    .auth-card {
+        background: var(--milk-white);
+        border-radius: 32px;
+        padding: 3.5rem 3rem;
+        box-shadow: 0 25px 50px -12px rgba(0, 100, 0, 0.15); /* Shadow using green tint */
+        border: 1px solid rgba(0, 100, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Subtle background pattern */
+    .auth-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100px;
+        background: linear-gradient(to bottom, var(--pasture-light), transparent);
+        opacity: 0.5;
+        z-index: 0;
+    }
+
+    .auth-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* 4. Input Fields Styling */
+    .input-group {
+        border-radius: 14px;
+        border: 1.5px solid rgba(74, 59, 50, 0.1);
+        transition: all 0.3s ease;
+        background-color: #FCFDFD;
+        overflow: hidden;
+    }
+
+    .input-group:focus-within {
+        border-color: var(--pasture-green);
+        box-shadow: 0 0 0 4px var(--pasture-light);
+    }
+
+    .input-group-text, .form-control {
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    .form-control {
+        color: var(--earth-dark);
+        font-weight: 500;
+    }
+
+    .form-control::placeholder {
+        color: rgba(74, 59, 50, 0.4);
+    }
+
+    /* 5. Button with Radius (Pill Shape) */
+    .btn-farm-primary {
+        background-color: var(--pasture-green);
+        color: var(--milk-white);
+        border-radius: 50px !important; /* Perfect Pill Shape */
+        padding: 16px 24px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        border: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(0, 100, 0, 0.25);
+    }
+
+    .btn-farm-primary:hover {
+        background-color: var(--pasture-dark);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 25px rgba(0, 100, 0, 0.35);
+        color: white;
+    }
+
+    /* Utility Classes */
+    .text-farm { color: var(--pasture-green) !important; }
+    .text-earth { color: var(--earth-brown) !important; }
+    .letter-spacing-1 { letter-spacing: 0.08em; }
+    .x-small { font-size: 0.75rem; }
+
+    /* Admin Option Styling */
+    .admin-link-container {
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px dashed rgba(0, 100, 0, 0.2);
+        text-align: center;
+    }
+    
+    .admin-link {
+        color: var(--earth-brown);
+        font-weight: 600;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.2s;
+    }
+    
+    .admin-link:hover {
+        color: var(--pasture-green);
+        text-decoration: underline;
+    }
+</style>
+
 <div class="container py-5 mt-lg-5">
     <div class="row justify-content-center">
-        <div class="col-md-5">
-            <div class="auth-card border-0 animate-fade">
-                <div class="text-center mb-5">
-                    <div class="brand-icon mx-auto mb-3" style="width: 60px; height: 60px; font-size: 1.75rem;">F</div>
-                    <h2 class="fw-bold text-dark">Welcome Back</h2>
-                    <p class="text-muted small">Access your farm-to-table dashboard</p>
+        <div class="col-md-6 col-lg-5">
+            <div class="auth-card animate-fade">
+                <div class="auth-content">
+                    <div class="text-center mb-5">
+                        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="FarmIO Logo" height="70" class="mb-4" style="object-fit: contain;" onerror="this.style.display='none'">
+                        
+                        <h2 class="fw-bold text-dark display-6 mb-2">Welcome Back</h2>
+                        <p class="text-earth small mb-0">Access your fresh dairy account</p>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('login') }}" id="loginForm">
+                        <div class="mb-4">
+                            <label for="email" class="form-label text-uppercase x-small fw-bold letter-spacing-1 text-earth opacity-75">
+                                Email Address
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text px-3">
+                                    <svg width="20" height="20" fill="var(--pasture-green)" viewBox="0 0 24 24">
+                                        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                                    </svg>
+                                </span>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="you@example.com" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-5">
+                            <div class="d-flex justify-content-between align-items-end mb-2">
+                                <label for="password" class="form-label text-uppercase x-small fw-bold letter-spacing-1 text-earth opacity-75 mb-0">
+                                    Password
+                                </label>
+                                <a href="#" class="x-small text-farm fw-bold text-decoration-none">Forgot?</a>
+                            </div>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text px-3">
+                                    <svg width="20" height="20" fill="var(--pasture-green)" viewBox="0 0 24 24">
+                                        <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z" />
+                                    </svg>
+                                </span>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-farm-primary w-100 mb-4 text-uppercase">
+                            Sign In
+                        </button>
+
+                        <div class="text-center">
+                            <p class="mb-0 small text-earth">New to FarmIO? 
+                                <a href="{{ url_for('register') }}" class="text-farm fw-bold text-decoration-none position-relative" style="padding-bottom: 2px;">
+                                    Create Account
+                                </a>
+                            </p>
+                        </div>
+
+                        <!-- ADMIN OPTION ADDED HERE -->
+                        <div class="admin-link-container">
+                            <p class="mb-0 small">
+                                <span class="text-earth">System Administrator?</span>
+                                <a href="#" class="admin-link ms-1" data-bs-toggle="tooltip" title="Login with your admin credentials above">
+                                    Admin Login
+                                </a>
+                            </p>
+                        </div>
+
+                    </form>
                 </div>
-
-                <form method="POST" action="{{ url_for('login') }}" id="loginForm">
-                    <div class="mb-4">
-                        <label for="email"
-                            class="form-label text-uppercase small fw-bold text-muted letter-spacing-1">Email
-                            Identifier</label>
-                        <div class="input-group input-group-lg border-bottom-0">
-                            <span class="input-group-text bg-light border-0"><svg width="18" height="18"
-                                    fill="var(--s-400)" viewBox="0 0 24 24">
-                                    <path
-                                        d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
-                                </svg></span>
-                            <input type="email" class="form-control bg-light border-0 shadow-none ps-0" id="email"
-                                name="email" placeholder="you@example.com" required>
-                        </div>
-                    </div>
-
-                    <div class="mb-5">
-                        <div class="d-flex justify-content-between">
-                            <label for="password"
-                                class="form-label text-uppercase small fw-bold text-muted letter-spacing-1">Security
-                                Key</label>
-                            <a href="#" class="x-small text-primary fw-bold text-decoration-none">Forgot?</a>
-                        </div>
-                        <div class="input-group input-group-lg">
-                            <span class="input-group-text bg-light border-0"><svg width="18" height="18"
-                                    fill="var(--s-400)" viewBox="0 0 24 24">
-                                    <path
-                                        d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z" />
-                                </svg></span>
-                            <input type="password" class="form-control bg-light border-0 shadow-none ps-0" id="password"
-                                name="password" placeholder="••••••••" required>
-                        </div>
-                    </div>
-
-                    <button type="submit"
-                        class="btn btn-primary btn-lg w-100 rounded-pill py-3 fw-bold mb-4 shadow-premium">Sign In to
-                        Platform</button>
-
-                    <div class="text-center">
-                        <p class="mb-0 small text-muted">New to the platform? <a href="{{ url_for('register') }}"
-                                class="text-primary fw-bold text-decoration-none">Create Account</a></p>
-                    </div>
-                </form>
             </div>
         </div>
     </div>
 </div>
-
-<style>
-    .letter-spacing-1 {
-        letter-spacing: 0.1em;
-    }
-
-    .x-small {
-        font-size: 0.75rem;
-    }
-
-    .bg-light {
-        background-color: #f8fafc !important;
-    }
-</style>
 {% endblock %}
