@@ -179,7 +179,8 @@
         margin: 0 5px;
     }
 </style>
-
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <!-- --- COMPULSORY RATING MODAL LOGIC (FIXED) --- -->
 <!-- We use 'namespace' to find the first unrated order without using 'break' -->
 {% set ns = namespace(unrated_order=none) %}
@@ -294,6 +295,59 @@
         </div>
     </div>
 
+    <!-- Browse Available Farms Section -->
+    <div class="row g-4 mb-5 animate-fade" style="animation-delay: 0.2s;">
+        <div class="col-12">
+            <div class="premium-card h-100 overflow-hidden">
+                <div class="card-header bg-white border-bottom p-4 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold text-dark">🌾 Available Farms ({{ farmers|length }})</h5>
+                    <small class="text-muted">Fresh milk available today</small>
+                </div>
+                <div class="card-body p-4">
+                    {% if farmers %}
+                    <div class="row g-3">
+                        {% for farmer in farmers %}
+                        <div class="col-md-6 col-lg-4 col-xl-3">
+                            <div class="card border-0 shadow-sm h-100 premium-card">
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <h6 class="card-title fw-bold text-dark mb-1">{{ farmer['farm_name'] }}</h6>
+                                        <p class="small text-muted mb-1">{{ farmer['farmer_name'] }}</p>
+                                        <p class="x-small" style="color: var(--sunset-orange);">📍 {{ farmer['location'] }} ({{ farmer['distance_km'] }}km away)</p>
+                                    </div>
+                                    <div class="mb-3 p-2 rounded" style="background-color: #f9fff6; border: 1px solid rgba(46,125,50,0.2);">
+                                        <div class="x-small fw-bold text-farm">Available: {{ farmer['remaining'] }} L</div>
+                                        <div class="x-small text-muted">Price: Rs. {{ farmer['price_per_litre'] }}/L</div>
+                                    </div>
+                                    {% if farmer['collection_time'] %}
+                                    <div class="x-small mb-3 p-2 rounded" style="background-color: #fff3e0;">
+                                        <span class="fw-bold">⏰ Fresh:</span> {{ farmer['collection_time'] }}
+                                    </div>
+                                    {% endif %}
+                                    {% if farmer['remaining'] > 0 %}
+                                    <a href="{{ url_for('place_order', farmer_id=farmer['farmer_id']) }}" class="btn btn-sm btn-farm-primary w-100">
+                                        Order Now
+                                    </a>
+                                    {% else %}
+                                    <button class="btn btn-sm btn-secondary w-100" disabled>
+                                        Out of Stock
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info mb-0">
+                        <i class="fas fa-info-circle"></i> No farms with available milk today. Please check back soon or adjust your location.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Order Table Section -->
     <div class="row g-4 animate-fade" style="animation-delay: 0.3s;">
         <div class="col-lg-8">
@@ -365,13 +419,81 @@
         </div>
         
         <div class="col-lg-4">
-             <div class="premium-card p-5 h-100 position-relative img-overlay-card orange-overlay" style="background-image: url('https://images.unsplash.com/photo-1589134712652-3023e13d964f?auto=format&fit=crop&w=800');">
+            <div class="premium-card h-100 mb-4">
+                <div class="card-header bg-white border-bottom p-4 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold text-dark">Delivery Partner Tracker</h5>
+                    <small class="text-muted">Live using OpenStreetMap</small>
+                </div>
+                <div class="card-body p-3">
+                    <div id="deliveryMap" style="height: 280px; width: 100%; border-radius: 14px; border: 1px solid rgba(46,125,50,0.15);"></div>
+                    <div class="mt-3">
+                        {% if active_delivery_tasks %}
+                            <div class="small text-farm fw-bold">Active Deliveries:</div>
+                            {% for task in active_delivery_tasks %}
+                            <div class="border rounded p-2 mb-2" style="background-color:#f9fff6;">
+                                <div><strong>Order #{{ task['order_id'] }}</strong> ({{ task['status'] }})</div>
+                                <div>From: {{ task['pickup_location'] }} → To: {{ task['delivery_address'] }}</div>
+                                <div>Courier: {{ task['delivery_partner_name'] or 'Pending assignment' }}</div>
+                                <div class="text-muted">Status: {{ task['status'] }} | Route time: {{ task['delivery_time'] or 'N/A' }}</div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="small text-muted">No active delivery in progress at the moment.</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="premium-card p-5 h-100 position-relative img-overlay-card orange-overlay" style="background-image: url('https://images.unsplash.com/photo-1589134712652-3023e13d964f?auto=format&fit=crop&w=800');">
                 <div class="position-relative z-1 h-100 d-flex flex-column">
                     <h4 class="text-white fw-bold mb-3">Explore Derivatives</h4>
                     <p class="text-white opacity-90 small mb-5">Convert your wallet credits into premium dairy products.</p>
                     <div class="mt-auto d-grid gap-3">
                         <a href="{{ url_for('consumer_products') }}" class="btn-farm btn-farm-white w-100" style="color: var(--sunset-orange);">Products Marketplace</a>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Marketplace Section -->
+    <div class="row g-4 animate-fade mb-0" style="animation-delay: 0.4s;">
+        <div class="col-12">
+            <div class="premium-card h-100 overflow-hidden">
+                <div class="card-header bg-white border-bottom p-4 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold text-dark">Available Products Marketplace</h5>
+                    <a href="{{ url_for('consumer_products') }}" class="x-small fw-bold text-farm text-decoration-none">View All Products</a>
+                </div>
+                <div class="card-body p-4">
+                    {% if dashboard_products %}
+                    <div class="row g-3">
+                        {% for product in dashboard_products %}
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card border-0 shadow-sm h-100 premium-card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h6 class="card-title fw-bold text-dark mb-0">{{ product['product_name'] }}</h6>
+                                        <span class="badge bg-farm-soft text-farm">{{ product['quantity'] }}</span>
+                                    </div>
+                                    <p class="small mb-2 text-muted">{{ product['farm_name'] }}</p>
+                                    <p class="x-small mb-3" style="color: var(--earth-brown);">By {{ product['farmer_name'] }}</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="fw-bold text-farm">Rs. {{ "%.2f"|format(product['price']) }}</span>
+                                        <form action="{{ url_for('buy_product', product_id=product['product_id']) }}" method="post" class="d-flex gap-1">
+                                            <input type="number" name="quantity" value="1" min="1" max="{{ product['quantity'] }}" class="form-control form-control-sm" style="width: 60px;">
+                                            <button type="submit" class="btn btn-sm btn-farm-primary">Buy</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info mb-0">
+                        <i class="fas fa-info-circle"></i> No products available in marketplace at the moment.
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -473,6 +595,113 @@ document.addEventListener('DOMContentLoaded', function() {
             stars.forEach(s => s.classList.remove('filled'));
         }
     });
+
+    // *** OpenStreetMap Delivery Tracker ***
+    const consumerLat = {{ session.get('user_lat', 0)|default(0) }};
+    const consumerLng = {{ session.get('user_lng', 0)|default(0) }};
+    const activeDeliveryTasks = {{ active_delivery_tasks|tojson | safe }};
+
+    function initDeliveryMap() {
+        const mapContainer = document.getElementById('deliveryMap');
+        if (!mapContainer) return;
+
+        const map = L.map('deliveryMap', { zoomControl: true, scrollWheelZoom: false });
+        const startLatLng = consumerLat && consumerLng ? [consumerLat, consumerLng] : [20.5937, 78.9629];
+        map.setView(startLatLng, consumerLat && consumerLng ? 12 : 5);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Store marker references for updating
+        const markerCache = {};
+        const polylineCache = {};
+
+        // Function to update map with delivery data
+        const updateDeliveryMap = (tasks) => {
+            tasks.forEach(task => {
+                const taskKey = `task_${task.order_id}`;
+                
+                // Consumer marker (static)
+                if (!markerCache['consumer'] && consumerLat && consumerLng) {
+                    markerCache['consumer'] = L.marker([consumerLat, consumerLng], { title: 'Your location' })
+                        .bindPopup('<strong>You (Consumer)</strong>').addTo(map);
+                }
+
+                // Pickup marker (static)
+                const pickupKey = `${taskKey}_pickup`;
+                if (!markerCache[pickupKey] && task.pickup_latitude && task.pickup_longitude) {
+                    markerCache[pickupKey] = L.marker([task.pickup_latitude, task.pickup_longitude])
+                        .bindPopup(`<strong>Pickup from</strong><br>${task.pickup_location}`).addTo(map);
+                }
+
+                // Delivery marker (static)
+                const deliveryKey = `${taskKey}_delivery`;
+                if (!markerCache[deliveryKey] && task.delivery_latitude && task.delivery_longitude) {
+                    markerCache[deliveryKey] = L.marker([task.delivery_latitude, task.delivery_longitude])
+                        .bindPopup(`<strong>Delivery to</strong><br>${task.delivery_address}`).addTo(map);
+                }
+
+                // Courier marker (LIVE - updates position)
+                const courierKey = `${taskKey}_courier`;
+                if (task.partner_lat && task.partner_lng) {
+                    if (markerCache[courierKey]) {
+                        // Update existing marker position
+                        markerCache[courierKey].setLatLng([task.partner_lat, task.partner_lng]);
+                    } else {
+                        // Create new courier marker
+                        markerCache[courierKey] = L.marker([task.partner_lat, task.partner_lng], { 
+                            title: 'Delivery Partner'
+                        })
+                        .bindPopup(`<strong>Courier:</strong> ${task.delivery_partner_name || 'In Transit'}<br>Order #${task.order_id} (${task.status})`)
+                        .addTo(map);
+                    }
+                }
+
+                // Route line (pickup to delivery)
+                const routeKey = `${taskKey}_route`;
+                if (task.pickup_latitude && task.pickup_longitude && task.delivery_latitude && task.delivery_longitude) {
+                    if (!polylineCache[routeKey]) {
+                        polylineCache[routeKey] = L.polyline(
+                            [[task.pickup_latitude, task.pickup_longitude], [task.delivery_latitude, task.delivery_longitude]],
+                            { color: '#2e7d32', weight: 3, opacity: 0.7 }
+                        ).addTo(map);
+                    }
+                }
+
+                // Fit map bounds to show all markers
+                if (tasks.length > 0 && (consumerLat && consumerLng)) {
+                    const bounds = L.latLngBounds([consumerLat, consumerLng]);
+                    tasks.forEach(t => {
+                        if (t.pickup_latitude && t.pickup_longitude) bounds.extend([t.pickup_latitude, t.pickup_longitude]);
+                        if (t.delivery_latitude && t.delivery_longitude) bounds.extend([t.delivery_latitude, t.delivery_longitude]);
+                        if (t.partner_lat && t.partner_lng) bounds.extend([t.partner_lat, t.partner_lng]);
+                    });
+                    map.fitBounds(bounds.pad(0.2));
+                }
+            });
+        };
+
+        // Initial map rendering
+        if (activeDeliveryTasks && activeDeliveryTasks.length > 0) {
+            updateDeliveryMap(activeDeliveryTasks);
+        }
+
+        // LIVE TRACKING: Poll for fresh delivery partner positions every 5 seconds
+        setInterval(() => {
+            fetch('/api/consumer/delivery-live-status')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.tasks && data.tasks.length > 0) {
+                        updateDeliveryMap(data.tasks);
+                    }
+                })
+                .catch(error => console.log('Live tracking update:', error));
+        }, 5000); // Update every 5 seconds
+    }
+
+    // Initialize map on page load
+    initDeliveryMap();
 });
 </script>
 {% endblock %}

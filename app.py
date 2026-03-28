@@ -235,6 +235,16 @@ def delivery_required(f):
     return decorated
 
 
+def admin_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if session.get('role') != 'admin':
+            flash('Access denied. Admin account required.', 'danger')
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated
+
+
 # ─── Routes: Home ────────────────────────────────────────────────────────────────
 @app.route('/')
 def index():
@@ -346,6 +356,8 @@ def login():
                 return redirect(url_for('farmer_dashboard'))
             elif user['role'] == 'delivery_partner':
                 return redirect(url_for('delivery_dashboard'))
+            elif user['role'] == 'admin':
+                return redirect(url_for('admin_dashboard'))
             else:
                 session['wallet_balance'] = user['wallet_balance']
                 return redirect(url_for('consumer_dashboard'))
@@ -594,6 +606,102 @@ def delete_product(product_id):
 
 
 # ─── Routes: Consumer Dashboard ─────────────────────────────────────────────────
+@app.route('/admin/dashboard')
+@login_required
+@admin_required
+def admin_dashboard():
+    db = get_db()
+
+    user_counts = db.execute('''
+        SELECT role, COUNT(*) AS count FROM users GROUP BY role
+    ''').fetchall()
+
+    stats = {r['role']: r['count'] for r in user_counts}
+    stats.setdefault('consumer', 0)
+    stats.setdefault('farmer', 0)
+    stats.setdefault('delivery_partner', 0)
+    stats.setdefault('admin', 0)
+
+    pending_delivery_partners = db.execute('''
+        SELECT user_id, name, email, location, latitude, longitude
+        FROM users
+        WHERE role = 'delivery_partner' AND is_cleared = 0
+        ORDER BY user_id ASC
+    ''').fetchall()
+
+    all_orders = db.execute('''
+        SELECT o.order_id, o.status, o.quantity, o.order_date, u.name as consumer_name, f.farm_name
+        FROM orders o
+        JOIN users u ON o.consumer_id = u.user_id
+        JOIN farmers f ON o.farmer_id = f.farmer_id
+        ORDER BY o.order_id DESC
+        LIMIT 25
+    ''').fetchall()
+
+    pending_tasks = db.execute('''
+        SELECT dt.delivery_id, dt.status, dt.delivery_time, dt.pickup_location, dt.delivery_address, o.order_id
+        FROM delivery_tasks dt
+        JOIN orders o ON dt.order_id = o.order_id
+        WHERE dt.status IN ('Pending', 'Accepted', 'Picked Up')
+        ORDER BY dt.created_at DESC
+    ''').fetchall()
+
+    return render_template('admin_dashboard.html',
+                           stats=stats,
+                           pending_delivery_partners=pending_delivery_partners,
+                           all_orders=all_orders,
+                           pending_tasks=pending_tasks)
+
+
+@app.route('/admin/delivery-partner/<int:user_id>/approve', methods=['POST'])
+@login_required
+@admin_required
+def admin_approve_delivery_partner(user_id):
+    db = get_db()
+    db.execute('UPDATE users SET is_cleared = 1 WHERE user_id = ? AND role = "delivery_partner"', (user_id,))
+    db.commit()
+    flash('Delivery partner approved successfully.', 'success')
+    return redirect(url_for('admin_dashboard'))
+
+
+@app.route('/admin/delivery-partner/<int:user_id>/reject', methods=['POST'])
+@login_required
+@admin_required
+def admin_reject_delivery_partner(user_id):
+    db = get_db()
+    db.execute('DELETE FROM users WHERE user_id = ? AND role = "delivery_partner"', (user_id,))
+    db.commit()
+    flash('Delivery partner request rejected and removed.', 'info')
+    return redirect(url_for('admin_dashboard'))
+
+
+@app.route('/admin/order/<int:order_id>/status', methods=['POST'])
+@login_required
+@admin_required
+def admin_update_order_status(order_id):
+    new_status = request.form.get('status', '').strip()
+    if new_status not in ['pending', 'processing', 'out for delivery', 'delivered', 'completed', 'cancelled']:
+        flash('Invalid status value.', 'danger')
+        return redirect(url_for('admin_dashboard'))
+
+    db = get_db()
+    db.execute('UPDATE orders SET status = ? WHERE order_id = ?', (new_status, order_id))
+    db.commit()
+    flash('Order status updated.', 'success')
+    return redirect(url_for('admin_dashboard'))
+
+
+@app.route('/admin/user/<int:user_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def admin_delete_user(user_id):
+    db = get_db()
+    db.execute('DELETE FROM users WHERE user_id = ? AND role != "admin"', (user_id,))
+    db.commit()
+    flash('User deleted.', 'success')
+    return redirect(url_for('admin_dashboard'))
+
+
 @app.route('/consumer/dashboard')
 @login_required
 @consumer_required
@@ -692,9 +800,34 @@ def consumer_dashboard():
         LIMIT 10
     ''', (session['user_id'],)).fetchall()
 
+    active_delivery_tasks = db.execute('''
+        SELECT dt.*, o.status AS order_status, f.farm_name, dp.name AS delivery_partner_name,
+               dp.latitude AS partner_lat, dp.longitude AS partner_lng
+        FROM delivery_tasks dt
+        JOIN orders o ON dt.order_id = o.order_id
+        JOIN farmers f ON o.farmer_id = f.farmer_id
+        LEFT JOIN users dp ON dt.delivery_partner_id = dp.user_id
+        WHERE o.consumer_id = ? AND dt.status IN ("Pending", "Accepted", "Picked Up")
+        ORDER BY dt.created_at DESC
+    ''', (session['user_id'],)).fetchall()
+
+    active_delivery_tasks = [dict(task) for task in active_delivery_tasks]
+
+    dashboard_products = db.execute('''
+        SELECT p.*, f.farm_name, u.name as farmer_name
+        FROM products p
+        JOIN farmers f ON p.farmer_id = f.farmer_id
+        JOIN users u ON f.user_id = u.user_id
+        WHERE p.quantity > 0
+        ORDER BY p.created_at DESC
+        LIMIT 8
+    ''').fetchall()
+
     return render_template('consumer_dashboard.html',
                            farmers=farmer_list,
                            my_orders=my_orders,
+                           active_delivery_tasks=active_delivery_tasks,
+                           dashboard_products=dashboard_products,
                            today=today,
                            max_distance=max_distance_km,
                            user_location=session.get('user_location', ''),
@@ -1193,6 +1326,38 @@ def delivered(delivery_id):
     db.commit()
     flash('Delivery completed successfully! Order status updated for consumer.', 'success')
     return redirect(url_for('delivery_dashboard'))
+
+
+# ─── API: Live Delivery Tracking ────────────────────────────────────────────────
+@app.route('/api/consumer/delivery-live-status')
+@login_required
+@consumer_required
+def get_delivery_live_status():
+    """Return active delivery tasks with fresh courier location data"""
+    db = get_db()
+    
+    active_tasks = db.execute('''
+        SELECT dt.delivery_id, dt.order_id, dt.status, dt.pickup_location, dt.delivery_address,
+               dt.pickup_latitude, dt.pickup_longitude, dt.delivery_latitude, dt.delivery_longitude,
+               dp.latitude AS partner_lat, dp.longitude AS partner_lng, dp.name AS delivery_partner_name,
+               f.farm_name
+        FROM delivery_tasks dt
+        JOIN orders o ON dt.order_id = o.order_id
+        JOIN farmers f ON o.farmer_id = f.farmer_id
+        LEFT JOIN users dp ON dt.delivery_partner_id = dp.user_id
+        WHERE o.consumer_id = ? AND dt.status IN ("Accepted", "Picked Up")
+        ORDER BY dt.created_at DESC
+    ''', (session['user_id'],)).fetchall()
+    
+    tasks_list = [dict(t) for t in active_tasks]
+    consumer_lat = session.get('user_lat', 0)
+    consumer_lng = session.get('user_lng', 0)
+    
+    return jsonify({
+        'tasks': tasks_list,
+        'consumer_lat': consumer_lat,
+        'consumer_lng': consumer_lng
+    })
 
 
 # ─── Init and run ────────────────────────────────────────────────────────────────

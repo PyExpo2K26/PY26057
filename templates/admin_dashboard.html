@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard - FarmIO{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="fw-bold">Admin Control Panel</h1>
+            <p class="text-muted">One place to manage users, delivery partners, orders and system health.</p>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="text-uppercase text-muted">Consumers</h6>
+                    <h3 class="fw-bold">{{ stats.consumer }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="text-uppercase text-muted">Farmers</h6>
+                    <h3 class="fw-bold">{{ stats.farmer }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="text-uppercase text-muted">Delivery Partners</h6>
+                    <h3 class="fw-bold">{{ stats.delivery_partner }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 bg-light">
+                <div class="card-body">
+                    <h6 class="text-uppercase text-muted">Total Admins</h6>
+                    <h3 class="fw-bold">{{ stats.admin }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header">Pending Delivery Partner Approvals</div>
+                <div class="card-body">
+                    {% if pending_delivery_partners %}
+                        <div class="list-group">
+                        {% for p in pending_delivery_partners %}
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="fw-bold">{{ p['name'] }} ({{ p['email'] }})</div>
+                                    <small class="text-muted">Location: {{ p['location'] or 'Not set' }}</small>
+                                </div>
+                                <div class="btn-group" role="group">
+                                    <form action="{{ url_for('admin_approve_delivery_partner', user_id=p['user_id']) }}" method="post" class="me-1">
+                                        <button class="btn btn-sm btn-success">Approve</button>
+                                    </form>
+                                    <form action="{{ url_for('admin_reject_delivery_partner', user_id=p['user_id']) }}" method="post">
+                                        <button class="btn btn-sm btn-danger">Reject</button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No pending delivery partner applications.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header">Active Delivery Tasks</div>
+                <div class="card-body">
+                    {% if pending_tasks %}
+                        <ul class="list-group">
+                        {% for t in pending_tasks %}
+                            <li class="list-group-item">
+                                <div><strong>Task #{{ t['delivery_id'] }}</strong> - Order #{{ t['order_id'] }}</div>
+                                <small class="text-muted">{{ t['pickup_location'] }} → {{ t['delivery_address'] }} ({{ t['status'] }})</small>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">No active delivery tasks currently.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header">Latest Orders</div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Order</th>
+                                    <th>Consumer</th>
+                                    <th>Farm</th>
+                                    <th>Qty</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for o in all_orders %}
+                                <tr>
+                                    <td>#{{ o['order_id'] }}</td>
+                                    <td>{{ o['consumer_name'] }}</td>
+                                    <td>{{ o['farm_name'] }}</td>
+                                    <td>{{ o['quantity'] }}</td>
+                                    <td>{{ o['status'] }}</td>
+                                    <td>
+                                        <form action="{{ url_for('admin_update_order_status', order_id=o['order_id']) }}" method="post" class="d-flex gap-1">
+                                            <select name="status" class="form-select form-select-sm">
+                                                <option value="pending" {% if o['status'] == 'pending' %}selected{% endif %}>pending</option>
+                                                <option value="processing" {% if o['status'] == 'processing' %}selected{% endif %}>processing</option>
+                                                <option value="out for delivery" {% if o['status'] == 'out for delivery' %}selected{% endif %}>out for delivery</option>
+                                                <option value="delivered" {% if o['status'] == 'delivered' %}selected{% endif %}>delivered</option>
+                                                <option value="completed" {% if o['status'] == 'completed' %}selected{% endif %}>completed</option>
+                                                <option value="cancelled" {% if o['status'] == 'cancelled' %}selected{% endif %}>cancelled</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

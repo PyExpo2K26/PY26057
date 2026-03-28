@@ -184,6 +184,8 @@
                         <li class="nav-item"><a class="nav-link px-3" href="{{ url_for('farmer_orders') }}">Orders</a></li>
                         {% elif session.get('role') == 'delivery_partner' %}
                         <li class="nav-item"><a class="nav-link px-3" href="{{ url_for('delivery_dashboard') }}">Dashboard</a></li>
+                        {% elif session.get('role') == 'admin' %}
+                        <li class="nav-item"><a class="nav-link px-3" href="{{ url_for('admin_dashboard') }}">Admin Panel</a></li>
                         {% else %}
                         <li class="nav-item"><a class="nav-link px-3" href="{{ url_for('consumer_dashboard') }}">Home</a></li>
                         <li class="nav-item"><a class="nav-link px-3" href="{{ url_for('wallet') }}">Wallet</a></li>
