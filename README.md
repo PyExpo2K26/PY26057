@@ -102,6 +102,30 @@ farmio/                        # Repo root
 
 ---
 
+## 🌐 Deploy On Render
+
+This repository is pre-configured for Render using [render.yaml](render.yaml).
+
+1. Push this repo to GitHub.
+2. In Render, click **New +** → **Blueprint**.
+3. Select this repository and deploy.
+
+The blueprint automatically configures:
+- `rootDir: CODE`
+- `buildCommand: pip install -r requirements.txt`
+- `startCommand: gunicorn app:app`
+- generated `SECRET_KEY`
+- persistent disk mounted at `/var/data`
+- `DATABASE_PATH=/var/data/database.db`
+
+### Notes
+
+- App reads `PORT` from environment in production.
+- SQLite persists on the Render disk mount (`/var/data`).
+- Local development still uses `CODE/database.db` by default.
+
+---
+
 ## 🗃️ Database Schema
 
 | Table                 | Description                                      |

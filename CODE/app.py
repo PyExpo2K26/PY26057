@@ -10,8 +10,21 @@ from flask import (
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.secret_key = 'milk_platform_secret_key_2026'
-DATABASE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'database.db')
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Use environment values in production and keep safe local fallbacks for development.
+app.secret_key = os.getenv('SECRET_KEY', 'milk_platform_secret_key_2026')
+
+if os.getenv('DATABASE_PATH'):
+    DATABASE = os.getenv('DATABASE_PATH')
+elif os.getenv('RENDER'):
+    DATABASE = '/var/data/database.db'
+else:
+    DATABASE = os.path.join(BASE_DIR, 'database.db')
+
+db_dir = os.path.dirname(DATABASE)
+if db_dir:
+    os.makedirs(db_dir, exist_ok=True)
 
 
 # ─── Database helpers ───────────────────────────────────────────────────────────
@@ -24,7 +37,7 @@ def get_db():
 
 
 @app.teardown_appcontext
-def close_db(exception):
+def close_db(_exception):
     db = g.pop('db', None)
     if db is not None:
         db.close()
@@ -179,6 +192,10 @@ def init_db():
     ''')
     db.commit()
     db.close()
+
+
+with app.app_context():
+    init_db()
 
 # ─── Haversine distance (km) ────────────────────────────────────────────────────
 def haversine(lat1, lon1, lat2, lon2):
@@ -1070,10 +1087,6 @@ def edit_subscription(subscription_id):
         quantity = float(request.form['quantity'])
         status = request.form['status']
         
-        price_per_500ml = 30.0
-        price_per_litre = price_per_500ml * 2
-        price_per_day = quantity * price_per_litre
-        
         db.execute('''
             UPDATE subscriptions 
             SET quantity = ?, status = ?
@@ -1363,4 +1376,8 @@ def get_delivery_live_status():
 # ─── Init and run ────────────────────────────────────────────────────────────────
 if __name__ == '__main__':
     init_db()
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(
+        debug=os.getenv('FLASK_DEBUG', '0') == '1',
+        host='0.0.0.0',
+        port=int(os.getenv('PORT', '5000'))
+    )
