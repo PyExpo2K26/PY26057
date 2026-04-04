@@ -18,7 +18,7 @@ app.secret_key = os.getenv('SECRET_KEY', 'milk_platform_secret_key_2026')
 if os.getenv('DATABASE_PATH'):
     DATABASE = os.getenv('DATABASE_PATH')
 elif os.getenv('RENDER'):
-    DATABASE = '/var/data/database.db'
+    DATABASE = '/tmp/database.db'
 else:
     DATABASE = os.path.join(BASE_DIR, 'database.db')
 
